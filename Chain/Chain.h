@@ -5,11 +5,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#define CHAIN_BASE_URL @"https://api.chain.com"
 #define DEFAULT_BLOCK_CHAIN @"bitcoin"
+#define DEFAULT_CHAIN_VERSION @"v2"
 
 @interface Chain : NSObject
 
 @property NSString *blockChain;
+@property NSString *version;
 
 + (instancetype)sharedInstanceWithToken:(NSString *)token;
 + (instancetype)sharedInstance;

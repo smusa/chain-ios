@@ -26,6 +26,7 @@ static Chain *sharedInstance = nil;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[Chain alloc] initWithToken:token];
         sharedInstance.blockChain = DEFAULT_BLOCK_CHAIN;
+        sharedInstance.version = DEFAULT_CHAIN_VERSION;
     });
     return sharedInstance;
 }
@@ -40,6 +41,8 @@ static Chain *sharedInstance = nil;
 - (id)initWithToken:(NSString *)token {
     if (self = [super init]) {
         self.token = token;
+        self.blockChain = DEFAULT_BLOCK_CHAIN;
+        self.version = DEFAULT_CHAIN_VERSION;
     }
     return self;
 }
@@ -193,9 +196,8 @@ static Chain *sharedInstance = nil;
 }
 
 - (NSURL *)_newURLWithPath:(NSString *)path {
-    NSString *baseURLString = @"https://api.chain.com/v1";
     NSString *auth = [self _authForPath:path];
-    NSString *URLString = [NSString stringWithFormat:@"%@/%@/%@%@", baseURLString, self.blockChain, path, auth];
+    NSString *URLString = [NSString stringWithFormat:@"%@/%@/%@/%@%@", CHAIN_BASE_URL, self.version, self.blockChain, path, auth];
     return [NSURL URLWithString:URLString];
 }
 

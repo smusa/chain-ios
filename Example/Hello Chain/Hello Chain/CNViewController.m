@@ -22,7 +22,8 @@
         if(error) {
             NSLog(@"Chain error: %@", error);
         } else {
-            double balance = [[dictionary objectForKey:@"balance"] doubleValue];
+            NSArray *result = [dictionary objectForKey:@"results"];
+            double balance = [[[[result firstObject] objectForKey:@"balance"] objectForKey:@"confirmed"] doubleValue];
             float btc = balance / 100000000.0;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.balanceLabel setText:[NSString stringWithFormat:@"Balance: %f", btc]];

@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name     = "Chain"
-  s.version  = "0.1.16"
+  s.version  = "2.0.0"
   s.summary  = "The Official iOS SDK for Chain's Bitcoin API"
   s.homepage = "https://chain.com"
   s.license  = 'MIT'
-  s.author   = {"Matt Matteson" => "matt@chain.com", "Ryan R. Smith" => "ryan@chain.com"}
+  s.author   = {"Ryan R. Smith" => "ryan@chain.com"}
   s.source   = {:git => "https://github.com/chain-engineering/chain-ios.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/chain'
 

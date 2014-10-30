@@ -26,6 +26,7 @@ static Chain *sharedInstance = nil;
     dispatch_once(&onceToken, ^{
         sharedInstance = [[Chain alloc] initWithToken:token];
         sharedInstance.blockChain = DEFAULT_BLOCK_CHAIN;
+        sharedInstance.version = DEFAULT_CHAIN_VERSION;
     });
     return sharedInstance;
 }
@@ -40,37 +41,29 @@ static Chain *sharedInstance = nil;
 - (id)initWithToken:(NSString *)token {
     if (self = [super init]) {
         self.token = token;
+        self.blockChain = DEFAULT_BLOCK_CHAIN;
+        self.version = DEFAULT_CHAIN_VERSION;
     }
     return self;
 }
 
-#pragma mark - 
+#pragma mark -
 
 - (NSURLSession *)_newChainSession {
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSData *APITokenData = [self.token dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *base64EncodedCredential = [APITokenData base64EncodedStringWithOptions:0];
-    NSString *authString = [NSString stringWithFormat:@"Basic %@", base64EncodedCredential];
     sessionConfiguration.HTTPAdditionalHeaders = @{@"Accept": @"application/json",
-                                                   @"Accept-Language": @"en",
-                                                   @"Authorization": authString};
+                                                   @"Accept-Language": @"en"};
     
     CNURLSessionDelegate *sessionDelegate = [[CNURLSessionDelegate alloc] init];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:sessionDelegate delegateQueue:nil];
     return session;
 }
 
-+ (NSURL *)_newChainURLWithBlockChain:(NSString *)chain Path:(NSString *)path {
-    NSString *baseURLString = @"https://api.chain.com/v1";
-    NSString *URLString = [NSString stringWithFormat:@"%@/%@/%@", baseURLString, chain, path];
-    return [NSURL URLWithString:URLString];
-}
-
 #pragma mark - Address
 
 - (void)getAddress:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"addresses/%@", address];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
@@ -95,7 +88,7 @@ static Chain *sharedInstance = nil;
     if (limit) {
         pathString = [pathString stringByAppendingString:[NSString stringWithFormat:@"?limit=%@", @(limit)]];
     }
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
@@ -108,7 +101,7 @@ static Chain *sharedInstance = nil;
 
 - (void)getAddressUnspents:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"addresses/%@/unspents", address];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
@@ -121,31 +114,31 @@ static Chain *sharedInstance = nil;
 
 - (void)getAddressOpReturns:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"addresses/%@/op-returns", address];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 - (void)getBlockOpReturnsByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"block/%@/op-returns", hash];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 - (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"block/%@/op-returns", @(height)];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 - (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"block/latest/op-returns"];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 - (void)getTransactionOpReturn:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"transactions/%@/op-return", hash];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
@@ -153,14 +146,14 @@ static Chain *sharedInstance = nil;
 
 - (void)getTransaction:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"transactions/%@", hash];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 
 - (void)sendTransaction:(NSString *)hex completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"transactions"];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
 
     NSDictionary *requestDictionary = @{@"hex":hex};
     NSError *serializationError = nil;
@@ -176,23 +169,37 @@ static Chain *sharedInstance = nil;
 
 - (void)getBlockByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"blocks/%@", hash];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 - (void)getBlockByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"blocks/%@", @(height)];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 - (void)getLatestBlockWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSString *pathString = [NSString stringWithFormat:@"blocks/latest"];
-    NSURL *url = [Chain _newChainURLWithBlockChain:self.blockChain Path:pathString];
+    NSURL *url = [self _newURLWithPath:pathString];
     [self _startGetTaskWithRequestURL:url completionHandler:completionHandler];
 }
 
 #pragma mark - HTTP Helpers
+
+- (NSString *)_authForPath:(NSString *)path {
+    if ([path rangeOfString:@"?"].location == NSNotFound) {
+        return [NSString stringWithFormat:@"?api-key-id=%@", self.token];
+    } else {
+        return [NSString stringWithFormat:@"&api-key-id=%@", self.token];
+    }
+}
+
+- (NSURL *)_newURLWithPath:(NSString *)path {
+    NSString *auth = [self _authForPath:path];
+    NSString *URLString = [NSString stringWithFormat:@"%@/%@/%@/%@%@", CHAIN_BASE_URL, self.version, self.blockChain, path, auth];
+    return [NSURL URLWithString:URLString];
+}
 
 -(void)_startPutTaskWithRequestURL:(NSURL *)url data:(NSData *)data completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     [self _startTaskWithRequestMethod:ChainRequestMethodPut URL:url data:data completionHandler:completionHandler];

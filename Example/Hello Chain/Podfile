@@ -1,0 +1,5 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target "Hello Chain" do
+  pod "Chain", :path => "../../"
+end

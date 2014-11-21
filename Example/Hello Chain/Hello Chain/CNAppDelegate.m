@@ -6,12 +6,12 @@
 //
 
 #import "CNAppDelegate.h"
-#import "Chain.h"
+#import <Chain/Chain.h>
 
 @implementation CNAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [Chain sharedInstanceWithToken:@"GUEST-TOKEN"];
+    [Chain sharedInstanceWithToken:@"2277e102b5d28a90700ff3062a282228"];
     return YES;
 }
 

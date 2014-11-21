@@ -6,19 +6,20 @@
 //
 
 #import "CNViewController.h"
-#import "Chain.h"
+#import <Chain/Chain.h>
 
 @interface CNViewController ()
-@property (nonatomic) UILabel* balanceLabel;
+@property (nonatomic) IBOutlet UILabel* balanceLabel;
 @end
 
 @implementation CNViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self.view addSubview:self.balanceLabel];
-    
-    [[Chain sharedInstance] getAddress:@"1A3tnautz38PZL15YWfxTeh8MtuMDhEPVB" completionHandler:^(NSDictionary *dictionary, NSError *error) {
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    [[Chain sharedInstance] getAddress:@"1A3tnautz38PZL15YWfxTeh8MtuMDhEPVB"
+                     completionHandler:^(NSDictionary *dictionary, NSError *error) {
         if(error) {
             NSLog(@"Chain error: %@", error);
         } else {
@@ -26,21 +27,14 @@
             double balance = [[[[result firstObject] objectForKey:@"balance"] objectForKey:@"confirmed"] doubleValue];
             float btc = balance / 100000000.0;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.balanceLabel setText:[NSString stringWithFormat:@"Balance: %f", btc]];
+                [self.balanceLabel setText:[NSString stringWithFormat:@"%f BTC", btc]];
             });
         }
     }];
 }
 
-- (UILabel *)balanceLabel {
-    if (!_balanceLabel) {
-        _balanceLabel = [[UILabel alloc] init];
-        [_balanceLabel setFrame:self.view.frame];
-        [_balanceLabel setFont:[UIFont fontWithName:@"Avenir" size:20.0]];
-        [_balanceLabel setTextColor:[UIColor whiteColor]];
-        [_balanceLabel setBackgroundColor:[UIColor clearColor]];
-        [_balanceLabel setTextAlignment:NSTextAlignmentCenter];
-    }
-    return _balanceLabel;
+- (UIStatusBarStyle) preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
 }
 @end

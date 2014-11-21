@@ -23,12 +23,18 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 // Only for ChainNotificationTypeTransaction.
 @property(nonatomic) NSString* transactionID;
 
+// Only for ChainNotificationTypeAddress.
+@property(nonatomic) NSString* address;
+
 // Instantiates a notification with a given type.
 - (id) initWithType:(NSString*)type;
 
 /// Instantiates a notification with type "transaction" watching
 /// for transaction with a given ID.
 - (id) initWithTransactionID:(NSString*)txid;
+
+/// Instantiates a notification with type "address" watching for a given address.
+- (id) initWithAddress:(NSString*)address;
 
 /// Dictionary representation suitable for network requests.
 - (NSDictionary*) dictionary;

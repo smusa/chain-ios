@@ -42,6 +42,18 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
     return self;
 }
 
+/// Instantiates a notification with type "address" watching for a given address.
+- (id) initWithAddress:(NSString*)address
+{
+    NSParameterAssert(address);
+    if (self = [self initWithType:ChainNotificationTypeAddress])
+    {
+        self.address = address;
+    }
+    return self;
+}
+
+
 - (NSDictionary*) dictionary
 {
     NSMutableDictionary* dict = [NSMutableDictionary dictionary];
@@ -49,6 +61,7 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
     dict[@"type"] = self.type;
     dict[@"block_chain"] = self.blockchain ?: ChainBlockchainMainnet;
     if (self.transactionID) dict[@"transaction_hash"] = self.transactionID;
+    if (self.address) dict[@"address"] = self.address;
 
     return dict;
 }

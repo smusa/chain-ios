@@ -75,8 +75,12 @@
     }
     else if ([payload[@"type"] isEqualToString:ChainNotificationTypeAddress])
     {
-        // Not supported yet.
-        return nil;
+        ChainNotificationAddress* addrResult = [[ChainNotificationAddress alloc] init];
+        addrResult.type = ChainNotificationTypeAddress;
+
+        // All info will be in payloadDictionary, see below.
+
+        result = addrResult;
     }
     else if ([payload[@"type"] isEqualToString:ChainNotificationTypeHeartbeat])
     {

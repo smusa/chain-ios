@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString* const ChainNotificationTypeAddress; // (not support for now)
+extern NSString* const ChainNotificationTypeAddress;
 extern NSString* const ChainNotificationTypeTransaction;
 extern NSString* const ChainNotificationTypeNewTransaction;
 extern NSString* const ChainNotificationTypeNewBlock;

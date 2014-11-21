@@ -7,7 +7,7 @@
 #import "Chain.h"
 #import "ChainNotification.h"
 
-NSString* const ChainNotificationTypeAddress = @"address"; // (not support for now)
+NSString* const ChainNotificationTypeAddress = @"address";
 NSString* const ChainNotificationTypeTransaction = @"transaction";
 NSString* const ChainNotificationTypeNewTransaction = @"new-transaction";
 NSString* const ChainNotificationTypeNewBlock = @"new-block";

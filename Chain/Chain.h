@@ -78,6 +78,21 @@ extern NSString* const ChainAPIVersion1;
 - (void)sendTransaction:(id)tx completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 
 
+#pragma mark - Transaction Builder
+
+// Builds, signs and sends transaction in one call.
+// Response is the same as from `-sendTransaction:completionHandler:` call.
+- (void) transact:(NSDictionary*)params completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+// Makes a request to build a transaction with given parameters.
+- (void) buildTransaction:(NSDictionary*)params completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+// Signs transaction template received from `-buildTransaction:completionHandler:`
+// with the given keys and sends the result to Chain to complete transaction.
+- (NSDictionary*) signTransactionTemplate:(NSDictionary*)template keys:(NSArray* /* {"private_key": <BTCKey> or <WIF NSString> } */)keys;
+
+
+
 #pragma mark - Block
 
 - (void)getBlockByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;

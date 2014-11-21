@@ -342,4 +342,39 @@ static Chain *sharedInstance = nil;
 }
 
 
+
+
+
+#pragma mark - Notifications
+
+
+- (ChainNotificationObserver*) observerForNotification:(ChainNotification*)notification
+{
+    return [self observerForNotification:notification resultHandler:nil];
+}
+
+- (ChainNotificationObserver*) observerForNotification:(ChainNotification*)notification resultHandler:(void(^)(ChainNotificationResult*))resultHandler
+{
+    NSParameterAssert(notification);
+
+    return [self observerForNotifications:@[ notification ] resultHandler:resultHandler];
+}
+
+- (ChainNotificationObserver*) observerForNotifications:(NSArray*)notifications
+{
+    return [self observerForNotifications:notifications resultHandler:nil];
+}
+
+- (ChainNotificationObserver*) observerForNotifications:(NSArray*)notifications resultHandler:(void(^)(ChainNotificationResult*))resultHandler
+{
+    NSParameterAssert(notifications);
+
+    ChainNotificationObserver* observer = [[ChainNotificationObserver alloc] initWithNotifications:notifications connection:self.connection];
+    observer.resultHandler = resultHandler;
+    [observer connect];
+    return observer;
+}
+
+
+
 @end

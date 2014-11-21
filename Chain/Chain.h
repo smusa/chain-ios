@@ -7,6 +7,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreBitcoin/CoreBitcoin.h>
 
+#import "ChainNotification.h"
+#import "ChainNotificationResult.h"
+#import "ChainNotificationObserver.h"
+
 extern NSString* const ChainErrorDomain;
 
 extern NSString* const ChainBlockchainMainnet;
@@ -98,6 +102,17 @@ extern NSString* const ChainAPIVersion1;
 - (void)getBlockByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getBlockByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getLatestBlockWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+
+#pragma mark - Notifications
+
+// Returns an observer that connects to Chain and begins receiving events.
+// Call 'disconnect' on observer instance to stop receiving notifications.
+- (ChainNotificationObserver*) observerForNotification:(ChainNotification*)notification;
+- (ChainNotificationObserver*) observerForNotification:(ChainNotification*)notification resultHandler:(void(^)(ChainNotificationResult*))resultHandler;
+- (ChainNotificationObserver*) observerForNotifications:(NSArray*)notifications;
+- (ChainNotificationObserver*) observerForNotifications:(NSArray*)notifications resultHandler:(void(^)(ChainNotificationResult*))resultHandler;
+
 
 
 @end

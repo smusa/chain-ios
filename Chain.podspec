@@ -10,13 +10,14 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Chain'
   s.resources = 'Chain/ChainCertificate.der'
-  s.public_header_files = 'Chain/Chain.h'
+  s.public_header_files = 'Chain/*.h'
 
   s.ios.frameworks     = %w{Foundation Security CFNetwork   }
   s.osx.frameworks     = %w{Foundation Security CoreServices}
   s.libraries          = "icucore"
 
   s.dependency 'CoreBitcoin', ">=0.5"
+  s.dependency 'SocketRocket'
 
   s.ios.deployment_target = '7.0'
   s.osx.deployment_target = '10.9'

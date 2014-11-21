@@ -14,7 +14,7 @@ class NotificationsTests : BaseTests {
     func testNewTransactionNotifications() {
 
         shouldCompleteIn(10.0)
-        let expectedTransactions = 4
+        let expectedTransactions = 2
         var transactions:[AnyObject] = []
 
         let notification = ChainNotification(type: ChainNotificationTypeNewTransaction)

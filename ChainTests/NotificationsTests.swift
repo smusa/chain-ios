@@ -18,7 +18,7 @@ class NotificationsTests : BaseTests {
         var transactions:[AnyObject] = []
 
         let notification = ChainNotification(type: ChainNotificationTypeNewTransaction)
-        let observer = self.client.observerForNotification(notification, resultHandler: { (result) in
+        let observer = self.client.observerForNotification(notification, resultHandler: { result in
 
             if let newtxresult = result as? ChainNotificationNewTransaction {
                 transactions.append(newtxresult.transactionDictionary)

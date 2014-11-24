@@ -48,7 +48,6 @@
 
 
 @interface ChainNotificationAddress : ChainNotificationResult
-// Not supported yet.
 @end
 
 

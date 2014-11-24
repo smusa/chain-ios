@@ -1,6 +1,6 @@
 import XCTest
 
-/// Base class for all tests.
+// Base class for all tests.
 class BaseTests : XCTestCase {
     var client:Chain!
     var asyncExpectation:XCTestExpectation?

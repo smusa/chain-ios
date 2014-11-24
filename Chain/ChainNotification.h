@@ -29,14 +29,14 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 // Instantiates a notification with a given type.
 - (id) initWithType:(NSString*)type;
 
-/// Instantiates a notification with type "transaction" watching
-/// for transaction with a given ID.
+// Instantiates a notification with type "transaction" watching
+// for a transaction with a given ID.
 - (id) initWithTransactionID:(NSString*)txid;
 
-/// Instantiates a notification with type "address" watching for a given address.
+// Instantiates a notification with type "address" watching for a given address.
 - (id) initWithAddress:(NSString*)address;
 
-/// Dictionary representation suitable for network requests.
+// Dictionary representation suitable for network requests.
 - (NSDictionary*) dictionary;
 
 @end

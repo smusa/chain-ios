@@ -30,8 +30,8 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
     return self;
 }
 
-/// Instantiates a notification with type "transaction" watching for transaction
-/// with a given ID.
+// Instantiates a notification with type "transaction" watching for transaction
+// with a given ID.
 - (id) initWithTransactionID:(NSString*)txid
 {
     NSParameterAssert(txid);
@@ -42,7 +42,7 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
     return self;
 }
 
-/// Instantiates a notification with type "address" watching for a given address.
+// Instantiates a notification with type "address" watching for a given address.
 - (id) initWithAddress:(NSString*)address
 {
     NSParameterAssert(address);

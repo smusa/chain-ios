@@ -209,7 +209,6 @@
 /* Begin PBXFileReference section */
 		20215E711A1CC8EA0031A271 /* ChainTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ChainTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		20215E721A1CC8EA0031A271 /* BaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseTests.swift; sourceTree = "<group>"; };
-		204C4FEE1A1FA5540074B966 /* DEV_README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DEV_README.md; sourceTree = "<group>"; };
 		207516A01A1B57B600155228 /* ChainAddressTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainAddressTests.m; sourceTree = "<group>"; };
 		207516A31A1B57D000155228 /* ChainCertificate.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = ChainCertificate.der; sourceTree = "<group>"; };
 		207516A41A1B57D000155228 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chain.h; sourceTree = "<group>"; };
@@ -435,7 +434,6 @@
 			isa = PBXGroup;
 			children = (
 				207519981A1B95E500155228 /* README.md */,
-				204C4FEE1A1FA5540074B966 /* DEV_README.md */,
 				207516AD1A1B57E600155228 /* Chain.podspec */,
 				207519971A1B95E500155228 /* LICENSE */,
 				207516A21A1B57D000155228 /* Chain */,

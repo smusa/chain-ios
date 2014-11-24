@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		20B10EC11A238A3000BCC841 /* CNNotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B10EC01A238A3000BCC841 /* CNNotificationsViewController.m */; };
 		20B10EC41A238A4500BCC841 /* CNAddressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B10EC31A238A4500BCC841 /* CNAddressViewController.m */; };
+		20B10EC61A239CF200BCC841 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 20B10EC51A239CF200BCC841 /* Launch Screen.xib */; };
 		2438E5DD8A3EFB930B5E2A33 /* libPods-Hello Chain.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE59797B034167AC082D4C25 /* libPods-Hello Chain.a */; };
 		C9FC5869193D3B4D0004D213 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FC5868193D3B4D0004D213 /* Foundation.framework */; };
 		C9FC586B193D3B4D0004D213 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FC586A193D3B4D0004D213 /* CoreGraphics.framework */; };
@@ -25,6 +26,7 @@
 		20B10EC01A238A3000BCC841 /* CNNotificationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CNNotificationsViewController.m; sourceTree = "<group>"; };
 		20B10EC21A238A4500BCC841 /* CNAddressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CNAddressViewController.h; sourceTree = "<group>"; };
 		20B10EC31A238A4500BCC841 /* CNAddressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CNAddressViewController.m; sourceTree = "<group>"; };
+		20B10EC51A239CF200BCC841 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		5C9CE3D3B5FD626514687D8D /* Pods-Hello Chain.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hello Chain.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Hello Chain/Pods-Hello Chain.debug.xcconfig"; sourceTree = "<group>"; };
 		C9FC5865193D3B4D0004D213 /* Hello Chain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Hello Chain.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9FC5868193D3B4D0004D213 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -108,6 +110,7 @@
 				20B10EBF1A238A3000BCC841 /* CNNotificationsViewController.h */,
 				20B10EC01A238A3000BCC841 /* CNNotificationsViewController.m */,
 				C9FC5880193D3B4D0004D213 /* Images.xcassets */,
+				20B10EC51A239CF200BCC841 /* Launch Screen.xib */,
 				C9FC586F193D3B4D0004D213 /* Supporting Files */,
 			);
 			path = "Hello Chain";
@@ -180,6 +183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9FC5881193D3B4D0004D213 /* Images.xcassets in Resources */,
+				20B10EC61A239CF200BCC841 /* Launch Screen.xib in Resources */,
 				C9FC5873193D3B4D0004D213 /* InfoPlist.strings in Resources */,
 				C9FC587C193D3B4D0004D213 /* Main.storyboard in Resources */,
 			);

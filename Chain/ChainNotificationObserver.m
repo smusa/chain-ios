@@ -42,6 +42,11 @@
     return self;
 }
 
+- (void) dealloc
+{
+    [self cleanup];
+}
+
 - (void) connect
 {
     if (_invalid)
@@ -77,6 +82,7 @@
     self.disconnectHandler = nil;
     _invalid = YES;
     [self.socket close];
+    self.socket.delegate = nil;
     self.socket = nil;
 }
 

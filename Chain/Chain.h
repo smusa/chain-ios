@@ -5,22 +5,43 @@
 //
 
 #import <Foundation/Foundation.h>
-#define CHAIN_BASE_URL @"https://api.chain.com"
-#define DEFAULT_BLOCK_CHAIN @"bitcoin"
-#define DEFAULT_CHAIN_VERSION @"v2"
+#import <CoreBitcoin/CoreBitcoin.h>
+
+extern NSString* const ChainErrorDomain;
+
+extern NSString* const ChainBlockchainMainnet;
+extern NSString* const ChainBlockchainTestnet;
+
+extern NSString* const ChainAPIVersion2;
+extern NSString* const ChainAPIVersion1;
 
 @interface Chain : NSObject
 
-@property NSString *blockChain;
-@property NSString *version;
+// Bitcoin blockchain being used.
+// Use ChainBlockchainMainnet or ChainBlockchainTestnet.
+// Default is mainnet.
+@property(nonatomic) NSString *blockchain;
 
+// API version to be used.
+// Default is v2.
+@property(nonatomic) NSString *version;
+
+// Access shared Chain instance and specify the token.
+// Call this method before calling `+sharedInstance`.
 + (instancetype)sharedInstanceWithToken:(NSString *)token;
+
+// Use this method to access shared Chain instance this after specifying the token with `+sharedInstanceWithToken:`.
 + (instancetype)sharedInstance;
+
+// Creates Chain instance with a given token.
+- (id)initWithToken:(NSString *)token;
+
 
 #pragma mark - Address
 
 - (void)getAddress:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
 
 #pragma mark - Transaction By Address
 
@@ -29,10 +50,12 @@
 - (void)getAddressTransactions:(NSString *)address limit:(NSInteger)limit completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getAddressesTransactions:(NSArray *)addresses limit:(NSInteger)limit completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 
+
 #pragma mark - Unspent Outputs By Address
 
 - (void)getAddressUnspents:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getAddressesUnspents:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
 
 #pragma mark - OP_RETURN
 
@@ -42,15 +65,24 @@
 - (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 
+
 #pragma mark - Transaction
 
-- (void)getTransaction:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)sendTransaction:(NSString *)hex completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+- (void)getTransaction:(NSString *)txid completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+// Sends transaction represented as one of the following:
+// - BTCTransaction
+// - NSData (raw binary)
+// - NSString (raw binary in hex)
+// - NSDictionary (signed tx template)
+- (void)sendTransaction:(id)tx completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
 
 #pragma mark - Block
 
 - (void)getBlockByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getBlockByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 - (void)getLatestBlockWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
 
 @end

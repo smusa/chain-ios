@@ -1,3 +1,6 @@
 [submodule "CoreBitcoin"]
 	path = CoreBitcoin
 	url = https://github.com/oleganza/CoreBitcoin.git
+[submodule "SocketRocket"]
+	path = SocketRocket
+	url = https://github.com/chain-engineering/SocketRocket.git

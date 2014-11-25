@@ -233,11 +233,9 @@ static Chain *sharedInstance = nil;
 // Response is the same as from `-sendTransaction:completionHandler:` call.
 // {
 //   inputs: [ {
-//       private_key: "568fjdk22..." or BTCKey,
-//       address:     "1mrn4jgT5..."
+//       private_key: "568fjdk2..." or BTCKey
 //     }, {
-//       private_key: "5fi654kd4..." or BTCKey,
-//       address:     "1Zj917Ln4..."
+//       private_key: "5fi654kd.." or BTCKey
 //     }
 //   ],
 //   outputs: [ {
@@ -263,12 +261,9 @@ static Chain *sharedInstance = nil;
         [NSException raise:@"ChainException" format:@"-transact: inputs must contain private keys"];
     }
 
-    // Make sure inputs contain addresses, and only them.
     NSMutableDictionary* params2 = [params mutableCopy];
     NSMutableArray* inputs = [NSMutableArray array];
-    for (NSDictionary* inp in params[@"inputs"]) {
-        NSString* address = inp[@"address"];
-        NSParameterAssert(address);
+    for (NSString* address in keysMap) {
         [inputs addObject:@{@"address": address}];
     }
     params2[@"inputs"] = inputs;
@@ -345,6 +340,41 @@ static Chain *sharedInstance = nil;
     NSURL *url = [self.connection URLWithPath:pathString];
     [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
 }
+
+
+
+
+
+#pragma mark - Notifications
+
+
+- (ChainNotificationObserver*) observerForNotification:(ChainNotification*)notification
+{
+    return [self observerForNotification:notification resultHandler:nil];
+}
+
+- (ChainNotificationObserver*) observerForNotification:(ChainNotification*)notification resultHandler:(void(^)(ChainNotificationResult*))resultHandler
+{
+    NSParameterAssert(notification);
+
+    return [self observerForNotifications:@[ notification ] resultHandler:resultHandler];
+}
+
+- (ChainNotificationObserver*) observerForNotifications:(NSArray*)notifications
+{
+    return [self observerForNotifications:notifications resultHandler:nil];
+}
+
+- (ChainNotificationObserver*) observerForNotifications:(NSArray*)notifications resultHandler:(void(^)(ChainNotificationResult*))resultHandler
+{
+    NSParameterAssert(notifications);
+
+    ChainNotificationObserver* observer = [[ChainNotificationObserver alloc] initWithNotifications:notifications connection:self.connection];
+    observer.resultHandler = resultHandler;
+    [observer connect];
+    return observer;
+}
+
 
 
 @end

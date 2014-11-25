@@ -11,5 +11,5 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *addressField;
 @property (weak, nonatomic) IBOutlet UILabel *balanceField;
-
+@property (weak, nonatomic) IBOutlet UIImageView* qrView;
 @end

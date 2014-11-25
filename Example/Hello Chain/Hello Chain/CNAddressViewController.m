@@ -7,8 +7,10 @@
 
 #import "CNAddressViewController.h"
 #import <Chain/Chain.h>
+#import <CoreBitcoin/CoreBitcoin.h>
 
 @interface CNAddressViewController () <UITextFieldDelegate>
+@property(nonatomic) ChainNotificationObserver* addressObserver;
 @end
 
 @implementation CNAddressViewController
@@ -23,10 +25,24 @@
 {
     [super viewDidAppear:animated];
     [self updateBalance];
+    [self updateObserver];
+}
+
+- (void) updateObserver
+{
+    [self.addressObserver disconnect];
+
+    // Listen to new transactions on this address and update balance as needed.
+    self.addressObserver = [[Chain sharedInstance] observerForNotification:
+                            [[ChainNotification alloc] initWithAddress:self.addressField.text]
+                                                             resultHandler:^(ChainNotificationResult *notification) {
+                                                                 [self updateBalance];
+                                                             }];
 }
 
 - (IBAction)didEndEditing:(id)sender
 {
+    [self updateObserver];
     [self updateBalance];
 }
 
@@ -38,19 +54,42 @@
 
 - (void) updateBalance
 {
+    self.qrView.image = [BTCQRCode imageForString:self.addressField.text
+                                             size:self.qrView.bounds.size
+                                            scale:[UIScreen mainScreen].scale];
+
     [[Chain sharedInstance] getAddress:self.addressField.text
                      completionHandler:^(NSDictionary *dictionary, NSError *error) {
                          if(error) {
                              NSLog(@"Chain error: %@", error);
-                             self.balanceField.text = error.localizedDescription ?: error.description ?: @"Error";
+                             [self showBalance:error.localizedDescription ?: error.description ?: @"Error"];
                          } else {
                              NSArray *result = [dictionary objectForKey:@"results"];
-                             double balance = [[[[result firstObject] objectForKey:@"confirmed"] objectForKey:@"balance"] doubleValue];
+                             double balance = [[[[result firstObject] objectForKey:@"total"] objectForKey:@"balance"] doubleValue];
                              float btc = balance / 100000000.0;
 
-                            self.balanceField.text = [NSString stringWithFormat:@"%f BTC", btc];
+                             [self showBalance:[NSString stringWithFormat:@"%f BTC", btc]];
                          }
                      }];
+}
+
+- (void) showBalance:(NSString*)newBalance { // 👟
+    if (![newBalance isEqualToString:self.balanceField.text]) {
+        self.balanceField.text = newBalance;
+        [self animateBalance];
+    }
+}
+
+- (void) animateBalance
+{
+    [UIView animateWithDuration:0.1 animations:^{
+        self.balanceField.transform = CGAffineTransformMakeScale(1.3, 1.3);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.15 animations:^{
+            self.balanceField.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        } completion:^(BOOL finished) {
+        }];
+    }];
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle

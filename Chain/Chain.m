@@ -185,10 +185,10 @@ static Chain *sharedInstance = nil;
 
 #pragma mark - Transaction
 
-- (void)getTransaction:(NSString *)txid completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void)getTransaction:(NSString *)txhash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"transactions/%@", txid];
+    NSString *pathString = [NSString stringWithFormat:@"transactions/%@", txhash];
     NSURL *url = [self.connection URLWithPath:pathString];
     [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
 }

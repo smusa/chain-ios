@@ -68,7 +68,7 @@ extern NSString* const ChainAPIVersion1;
 
 #pragma mark - Transaction
 
-- (void)getTransaction:(NSString *)txid completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+- (void)getTransaction:(NSString *)txhash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
 
 // Sends transaction represented as one of the following:
 // - BTCTransaction

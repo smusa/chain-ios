@@ -31,13 +31,13 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
 }
 
 // Instantiates a notification with type "transaction" watching for transaction
-// with a given ID.
-- (id) initWithTransactionID:(NSString*)txid
+// with a given hash.
+- (id) initWithTransactionHash:(NSString*)txhash
 {
-    NSParameterAssert(txid);
+    NSParameterAssert(txhash);
     if (self = [self initWithType:ChainNotificationTypeTransaction])
     {
-        self.transactionID = txid;
+        self.transactionHash = txhash;
     }
     return self;
 }
@@ -60,7 +60,7 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
 
     dict[@"type"] = self.type;
     dict[@"block_chain"] = self.blockchain ?: ChainBlockchainMainnet;
-    if (self.transactionID) dict[@"transaction_hash"] = self.transactionID;
+    if (self.transactionHash) dict[@"transaction_hash"] = self.transactionHash;
     if (self.address) dict[@"address"] = self.address;
 
     return dict;

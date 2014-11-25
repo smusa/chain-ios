@@ -21,7 +21,7 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 @property(nonatomic) NSString* blockchain;
 
 // Only for ChainNotificationTypeTransaction.
-@property(nonatomic) NSString* transactionID;
+@property(nonatomic) NSString* transactionHash;
 
 // Only for ChainNotificationTypeAddress.
 @property(nonatomic) NSString* address;
@@ -30,8 +30,8 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 - (id) initWithType:(NSString*)type;
 
 // Instantiates a notification with type "transaction" watching
-// for a transaction with a given ID.
-- (id) initWithTransactionID:(NSString*)txid;
+// for a transaction with a given hash.
+- (id) initWithTransactionHash:(NSString*)txhash;
 
 // Instantiates a notification with type "address" watching for a given address.
 - (id) initWithAddress:(NSString*)address;

@@ -190,12 +190,12 @@ class TransactTests : BaseTests {
             ]
             ]) { (dictionary, error) in
 
-                let txid = dictionary["transaction_hash"] as String
-                let txhash = BTCTransactionHashFromID(txid)
+                let txhash = dictionary["transaction_hash"] as String
+                let rawhash = BTCTransactionHashFromID(txhash)
 
-                NSLog("BROADCASTED TRANSACTION: %@", txid)
+                NSLog("BROADCASTED TRANSACTION: %@", txhash)
 
-                XCTAssert(txhash.length == 32, "Must return a 256-bit transaction ID in hex.")
+                XCTAssert(rawhash.length == 32, "Must return a 256-bit transaction ID in hex.")
 
                 self.completeAsyncTask()
         }

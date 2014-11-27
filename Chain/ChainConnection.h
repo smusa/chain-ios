@@ -13,6 +13,7 @@
 @property(nonatomic) NSString* version; // E.g. "v2"
 @property(nonatomic) NSString* hostname;
 @property(nonatomic) NSString* webSocketHostname;
+@property(nonatomic, readonly) NSArray* anchorCertificates;
 
 // Returns a fully-specified URL to make a request for a given path.
 - (NSURL*) URLWithPath:(NSString *)path;

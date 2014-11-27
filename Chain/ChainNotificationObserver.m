@@ -9,11 +9,14 @@
 #import "ChainNotificationResult.h"
 #import "ChainNotificationObserver.h"
 
-#import <SocketRocket/SRWebSocket.h>
+// We use ChainSRWebSocket until SocketRocket merges our pull-req
+// #import <SocketRocket/SRWebSocket.h>
 
-@interface ChainNotificationObserver () <SRWebSocketDelegate>
+#import "ChainSRWebSocket.h"
+
+@interface ChainNotificationObserver () <ChainSRWebSocketDelegate>
 @property(nonatomic, readwrite) NSArray* notifications;
-@property(nonatomic) SRWebSocket* socket;
+@property(nonatomic) ChainSRWebSocket* socket;
 @property(nonatomic) ChainConnection* connection;
 @end
 
@@ -64,7 +67,10 @@
         [self.socket close];
 
         // "wss://ws.chain.com/v2/notifications"
-        self.socket = [[SRWebSocket alloc] initWithURL:[self.connection webSocketURLWithPath:@"notifications"]];
+        NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[self.connection webSocketURLWithPath:@"notifications"]];
+        req.ChainSR_SSLAnchorCertificates = self.connection.anchorCertificates;
+        
+        self.socket = [[ChainSRWebSocket alloc] initWithURLRequest:req];
         self.socket.delegate = self;
 
         [self.socket open];
@@ -92,7 +98,7 @@
 
 // message will either be an NSString if the server is using text
 // or NSData if the server is using binary.
-- (void)webSocket:(SRWebSocket *)socket didReceiveMessage:(id)message
+- (void)webSocket:(ChainSRWebSocket *)socket didReceiveMessage:(id)message
 {
     if (_invalid) return;
 
@@ -118,7 +124,7 @@
     }
 }
 
-- (void)webSocketDidOpen:(SRWebSocket *)socket
+- (void)webSocketDidOpen:(ChainSRWebSocket *)socket
 {
     if (_invalid) return;
 
@@ -139,7 +145,7 @@
     }
 }
 
-- (void)webSocket:(SRWebSocket *)socket didFailWithError:(NSError *)error
+- (void)webSocket:(ChainSRWebSocket *)socket didFailWithError:(NSError *)error
 {
     if (_invalid) return;
 
@@ -154,7 +160,7 @@
     }
 }
 
-- (void)webSocket:(SRWebSocket *)socket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
+- (void)webSocket:(ChainSRWebSocket *)socket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
     if (_invalid) return;
 
@@ -169,7 +175,7 @@
     }
 }
 
-- (void)webSocket:(SRWebSocket *)socket didReceivePong:(NSData *)pongPayload
+- (void)webSocket:(ChainSRWebSocket *)socket didReceivePong:(NSData *)pongPayload
 {
     if (_invalid) return;
 }

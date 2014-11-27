@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.source   = {:git => "https://github.com/chain-engineering/chain-ios.git", :tag => s.version.to_s }
 
   s.source_files = 'Chain'
-  s.resources = 'Chain/ChainCertificate.der'
+  s.resources = ['Chain/ChainCertificate.der', 'Chain/ChainWSSCertificate.der']
   s.public_header_files = 'Chain/*.h'
 
   s.ios.frameworks     = %w{Foundation Security CFNetwork   }
@@ -17,7 +17,9 @@ Pod::Spec.new do |s|
   s.libraries          = "icucore"
 
   s.dependency 'CoreBitcoin', ">=0.5"
-  s.dependency 'SocketRocket'
+
+  # We use a built-in fork until SocketRocket merges support for anchor certificates
+  # s.dependency 'SocketRocket'
 
   s.ios.deployment_target = '7.0'
   s.osx.deployment_target = '10.9'

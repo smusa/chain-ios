@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = "Chain"
-  s.version  = "2.2.0pre2"
+  s.version  = "3.0pre1"
   s.summary  = "The Official iOS SDK for Chain's Bitcoin API"
   s.homepage = "https://chain.com"
   s.license  = 'MIT'
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.osx.frameworks     = %w{Foundation Security CoreServices}
   s.libraries          = "icucore"
 
-  s.dependency 'CoreBitcoin', ">=0.5"
+  s.dependency 'CoreBitcoin', ">=0.6"
 
   # We use a built-in fork until SocketRocket merges support for anchor certificates
   # s.dependency 'SocketRocket'

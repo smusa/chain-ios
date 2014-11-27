@@ -77,55 +77,98 @@ static Chain *sharedInstance = nil;
 
 #pragma mark - Address
 
-- (void)getAddress:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"addresses/%@", address];
+- (void)getAddress:(id)address completionHandler:(void (^)(ChainAddressInfo *addressInfo, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(address != nil);
+    [self getAddresses:@[ address ] completionHandler:^(NSArray *addressInfos, NSError *error) {
+        if (addressInfos) {
+            completionHandler(addressInfos.firstObject, nil);
+        } else {
+            completionHandler(nil, error);
+        }
+    }];
+}
+
+- (void)getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSArray *addressInfos, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(addresses != nil);
+
+    NSString* addr = [[self addressStringsForAddresses:addresses] componentsJoinedByString:@","];
+    NSString *pathString = [NSString stringWithFormat:@"addresses/%@", addr];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+
+        NSMutableArray* results = [NSMutableArray array];
+
+        for (NSDictionary* dict in dictionary[@"results"] ?: @[dictionary]) {
+            ChainAddressInfo* addrInfo = [[ChainAddressInfo alloc] initWithDictionary:dict];
+            if (addrInfo) [results addObject:addrInfo];
+        }
+        completionHandler(results, nil);
+    }];
 }
 
-- (void)getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
 
-    NSString *joinedAddresses = [addresses componentsJoinedByString:@","];
-    [self getAddress:joinedAddresses completionHandler:completionHandler];
+
+#pragma mark - Transactions By Address
+
+
+- (void) getAddressTransactions:(id)address completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(address != nil);
+    [self getAddressesTransactions:@[address] limit:0 completionHandler:completionHandler];
 }
 
-#pragma mark - Transaction By Address
-
-- (void)getAddressTransactions:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void) getAddressesTransactions:(NSArray *)addresses completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
-
-    [self getAddressTransactions:address limit:0 completionHandler:completionHandler];
+    NSParameterAssert(addresses != nil);
+    [self getAddressesTransactions:addresses limit:0 completionHandler:completionHandler];
 }
 
-- (void)getAddressesTransactions:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void)getAddressTransactions:(id)address limit:(NSInteger)limit completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
-
-    NSString *joinedAddresses = [addresses componentsJoinedByString:@","];
-    [self getAddressTransactions:joinedAddresses limit:0 completionHandler:completionHandler];
+    NSParameterAssert(address != nil);
+    [self getAddressesTransactions:@[address] limit:0 completionHandler:completionHandler];
 }
 
-- (void)getAddressTransactions:(NSString *)address limit:(NSInteger)limit completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void)getAddressesTransactions:(NSArray *)addresses limit:(NSInteger)limit completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(addresses != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"addresses/%@/transactions", address];
-    if (limit) {
+    NSString* addr = [[self addressStringsForAddresses:addresses] componentsJoinedByString:@","];
+    NSString *pathString = [NSString stringWithFormat:@"addresses/%@/transactions", addr];
+    if (limit > 0) {
         pathString = [pathString stringByAppendingString:[NSString stringWithFormat:@"?limit=%@", @(limit)]];
     }
+
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+
+        NSMutableArray* results = [NSMutableArray array];
+
+        for (NSDictionary* txdict in dictionary[@"results"]) {
+            BTCTransaction* tx = [self transactionWithDictionary:txdict];
+            if (tx) [results addObject:tx];
+        }
+        completionHandler(results, nil);
+    }];
 }
 
-- (void)getAddressesTransactions:(NSArray *)addresses limit:(NSInteger)limit completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
 
-    NSString *joinedAddresses = [addresses componentsJoinedByString:@","];
-    [self getAddressTransactions:joinedAddresses limit:limit completionHandler:completionHandler];
-}
 
 #pragma mark - Unspent Outputs By Address
+
+
 
 - (void)getAddressUnspents:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
@@ -141,6 +184,8 @@ static Chain *sharedInstance = nil;
     NSString *joinedAddresses = [addresses componentsJoinedByString:@","];
     [self getAddressUnspents:joinedAddresses completionHandler:completionHandler];
 }
+
+
 
 #pragma mark - OP_RETURN
 
@@ -376,5 +421,97 @@ static Chain *sharedInstance = nil;
 }
 
 
+
+#pragma mark - Helpers
+
+
+- (NSArray*) addressStringsForAddresses:(NSArray*)addrs
+{
+    NSMutableArray* addrStrings = [NSMutableArray array];
+    for (id addr in addrs) {
+        if ([addr isKindOfClass:[BTCAddress class]])
+        {
+            [addrStrings addObject:((BTCAddress*)addr).base58String];
+        }
+        else if ([addr isKindOfClass:[NSString class]])
+        {
+            [addrStrings addObject:addr];
+        }
+        else
+        {
+            [NSException raise:@"Chain: unsupported address type"
+                        format:@"Addresses must be of type NSString or BTCAddress. Unsupported type detected: %@", [addr class]];
+        }
+    }
+    return addrStrings;
+}
+
+
+- (NSArray*) addressesForAddressStrings:(NSArray*)addressStrings
+{
+    NSMutableArray* addresses = [NSMutableArray array];
+    for (id str in addressStrings)
+    {
+        BTCAddress* addr = [BTCAddress addressWithBase58String:str];
+        if (addr) [addresses addObject:addr];
+    }
+    return addresses;
+}
+
+
+- (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict
+{
+    // Will be used below to check that we constructed transaction correctly.
+    NSData* receivedHash = BTCTransactionHashFromID(dict[@"hash"]);
+
+    BTCTransaction* tx = [[BTCTransaction alloc] init];
+
+    for (NSDictionary* inputDict in dict[@"inputs"])
+    {
+        BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
+        txin.previousTransactionID = inputDict[@"output_hash"];
+        txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
+        txin.userInfo = @{@"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]] };
+
+        //   if !input_dict["script_signature"] && input_dict["coinbase"]
+        //     txin.coinbase_data = BTC::Data.data_from_hex(input_dict["coinbase"])
+        //   else
+        //     parts = input_dict["script_signature"].split(" ").map do |part|
+        //       if part.to_i.to_s == part // support "0" prefix.
+        //         BTC::Opcode.opcode_for_small_integer(part.to_i)
+        //       else
+        //         BTC::Data.data_from_hex(part)
+        //       end
+        //     end
+        //     txin.signature_script = (BTC::Script.new << parts)
+        //   end
+        //   txin.value = input_dict["value"].to_i
+        [tx addInput:txin];
+    }
+
+    for (NSDictionary* outputDict in dict[@"outputs"]) {
+        BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
+        txout.value = [outputDict[@"value"] longLongValue];
+        //   txout.script = BTC::Script.with_data(BTC::Data.data_from_hex(output_dict["script_hex"]))
+        //   txout.spent = output_dict["spent"]
+        //   txout.addresses = (output_dict["addresses"] || []).map{|a| BTC::Address.with_string(a) }
+        [tx addOutput:txout];
+    }
+
+    // Check that hash of the resulting tx is the same as received one.
+    if (![tx.transactionHash isEqual:receivedHash]) {
+        NSLog(@"Chain: received transaction %@ and failed to build proper binary copy. Could be non-canonical PUSHDATA somewhere. Dictionary: %@", dict[@"hash"], dict);
+        return nil;
+    }
+
+    // tx.block_hash = BTC.hash_from_id(dict["block_hash"]) // block hash is reversed hex like txid.
+    // tx.block_height = dict["block_height"].to_i
+    // tx.block_time = dict["block_time"] ? Time.parse(dict["block_time"]) : nil
+    // tx.confirmations = dict["confirmations"].to_i
+    // tx.fee = dict["fees"] ? dict["fees"].to_i : nil
+    // tx.chain_received_at = dict["chain_received_at"] ? Time.parse(dict["chain_received_at"]) : nil
+    // tx
+    return tx;
+}
 
 @end

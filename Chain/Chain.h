@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreBitcoin/CoreBitcoin.h>
 
+#import "ChainAddressInfo.h"
 #import "ChainNotification.h"
 #import "ChainNotificationResult.h"
 #import "ChainNotificationObserver.h"
@@ -18,6 +19,9 @@ extern NSString* const ChainBlockchainTestnet;
 
 extern NSString* const ChainAPIVersion2;
 extern NSString* const ChainAPIVersion1;
+
+@class BTCAddress;
+@class BTCTransaction;
 
 @interface Chain : NSObject
 
@@ -32,27 +36,44 @@ extern NSString* const ChainAPIVersion1;
 
 // Access shared Chain instance and specify the token.
 // Call this method before calling `+sharedInstance`.
-+ (instancetype)sharedInstanceWithToken:(NSString *)token;
++ (instancetype) sharedInstanceWithToken:(NSString *)token;
 
 // Use this method to access shared Chain instance this after specifying the token with `+sharedInstanceWithToken:`.
-+ (instancetype)sharedInstance;
++ (instancetype) sharedInstance;
 
 // Creates Chain instance with a given token.
-- (id)initWithToken:(NSString *)token;
+- (id) initWithToken:(NSString *)token;
 
 
 #pragma mark - Address
 
-- (void)getAddress:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+// Returns ChainAddressInfo instance for a given address (NSString or BTCAddress type).
+- (void) getAddress:(id)address completionHandler:(void (^)(ChainAddressInfo *addressInfo, NSError *error))completionHandler;
+
+// Returns an array of ChainAddressInfo instances for a list of addresses (NSString or BTCAddress types).
+- (void) getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSArray *addressInfos, NSError *error))completionHandler;
 
 
-#pragma mark - Transaction By Address
+#pragma mark - Transactions By Address
 
-- (void)getAddressTransactions:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getAddressesTransactions:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getAddressTransactions:(NSString *)address limit:(NSInteger)limit completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getAddressesTransactions:(NSArray *)addresses limit:(NSInteger)limit completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+// Returns a list of transactions (BTCTransaction objects) for a given address or address.
+// Each address instance could be an NSString or BTCAddress.
+// Optional `limit` parameter specifies the maximum amount of transactions to be returned (0 meaning not limit).
+// Each transaction has the following informational properties set:
+// - blockID: String
+// - blockHash: NSData
+// - blockHeight: Int
+// - blockDate: NSDate
+// - confirmations: Int
+// - fee: BTCAmount
+// - inputs.userInfo["addresses"]: [BTCAddress] (addresses used in each input)
+// - inputs.value: BTCAmount (amount spent by the input)
+// - outputs.userInfo["addresses"]: [BTCAddress] (addresses used in each output)
+// - userInfo["chain_received_at"]: NSDate
+- (void) getAddressTransactions:(id)address completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
+- (void) getAddressesTransactions:(NSArray *)addresses completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
+- (void) getAddressTransactions:(id)address limit:(NSInteger)limit completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
+- (void) getAddressesTransactions:(NSArray *)addresses limit:(NSInteger)limit completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
 
 
 #pragma mark - Unspent Outputs By Address

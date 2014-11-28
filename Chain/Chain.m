@@ -471,30 +471,39 @@ static Chain *sharedInstance = nil;
         BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
         txin.previousTransactionID = inputDict[@"output_hash"];
         txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
-        txin.userInfo = @{@"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]] };
+        txin.userInfo = @{
+                          @"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]],
+                          @"value": inputDict[@"value"] ?: @0.0,
+                          };
+//        txin.value = [inputDict[@"value"] longLongValue];
 
-        //   if !input_dict["script_signature"] && input_dict["coinbase"]
-        //     txin.coinbase_data = BTC::Data.data_from_hex(input_dict["coinbase"])
-        //   else
-        //     parts = input_dict["script_signature"].split(" ").map do |part|
-        //       if part.to_i.to_s == part // support "0" prefix.
-        //         BTC::Opcode.opcode_for_small_integer(part.to_i)
-        //       else
-        //         BTC::Data.data_from_hex(part)
-        //       end
-        //     end
-        //     txin.signature_script = (BTC::Script.new << parts)
-        //   end
-        //   txin.value = input_dict["value"].to_i
+        if (!inputDict[@"script_signature"] && inputDict[@"coinbase"])
+        {
+            txin.coinbaseData = BTCDataWithHexString(inputDict[@"coinbase"]);
+        }
+        else
+        {
+            //     parts = input_dict["script_signature"].split(" ").map do |part|
+            //       if part.to_i.to_s == part // support "0" prefix.
+            //         BTC::Opcode.opcode_for_small_integer(part.to_i)
+            //       else
+            //         BTC::Data.data_from_hex(part)
+            //       end
+            //     end
+            //     txin.signature_script = (BTC::Script.new << parts)
+            txin.signatureScript = [[BTCScript alloc] initWithString:inputDict[@"script_signature"]];
+        }
         [tx addInput:txin];
     }
 
     for (NSDictionary* outputDict in dict[@"outputs"]) {
         BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
         txout.value = [outputDict[@"value"] longLongValue];
-        //   txout.script = BTC::Script.with_data(BTC::Data.data_from_hex(output_dict["script_hex"]))
-        //   txout.spent = output_dict["spent"]
-        //   txout.addresses = (output_dict["addresses"] || []).map{|a| BTC::Address.with_string(a) }
+        txout.script = [[BTCScript alloc] initWithData:BTCDataWithHexString(outputDict[@"script_hex"])];
+        txout.userInfo = @{
+                          @"addresses": [self addressesForAddressStrings:outputDict[@"addresses"]],
+                          @"spent": outputDict[@"spent"] ?: @NO
+                        };
         [tx addOutput:txout];
     }
 
@@ -503,6 +512,8 @@ static Chain *sharedInstance = nil;
         NSLog(@"Chain: received transaction %@ and failed to build proper binary copy. Could be non-canonical PUSHDATA somewhere. Dictionary: %@", dict[@"hash"], dict);
         return nil;
     }
+
+    //tx.blockDate =
 
     // tx.block_hash = BTC.hash_from_id(dict["block_hash"]) // block hash is reversed hex like txid.
     // tx.block_height = dict["block_height"].to_i

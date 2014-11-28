@@ -1,6 +1,6 @@
 import XCTest
 
-class AddressTests : BaseTests {
+class AddressInfoTests : BaseTests {
 
     override func blockchain() -> String {
         return ChainBlockchainMainnet

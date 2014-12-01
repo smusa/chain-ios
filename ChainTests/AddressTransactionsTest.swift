@@ -8,7 +8,6 @@ class AddressTransactionsTests : BaseTests {
 
     override func setUp() {
         super.setUp()
-
     }
 
     func testSingleAddressTransactions() {

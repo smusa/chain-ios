@@ -17,6 +17,8 @@
 		2061D1E81A2CB655004F1E40 /* BTCHashID.h in Headers */ = {isa = PBXBuildFile; fileRef = 2061D1E51A2CB655004F1E40 /* BTCHashID.h */; };
 		2061D1E91A2CB655004F1E40 /* BTCHashID.m in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1E61A2CB655004F1E40 /* BTCHashID.m */; };
 		2061D1EA1A2CB655004F1E40 /* BTCHashID.m in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1E61A2CB655004F1E40 /* BTCHashID.m */; };
+		2061D1EE1A2CD975004F1E40 /* AddressUnspentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1EB1A2CD8F3004F1E40 /* AddressUnspentsTests.swift */; };
+		2061D1EF1A2CD976004F1E40 /* AddressUnspentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1EB1A2CD8F3004F1E40 /* AddressUnspentsTests.swift */; };
 		208C498E1A1E50B80013A328 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 208C498D1A1E50B80013A328 /* libicucore.dylib */; };
 		208C49931A1E50E70013A328 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 208C49921A1E50E70013A328 /* libicucore.dylib */; };
 		20C4ECA21A1CF3D8000E42C0 /* Chain-iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 20C4ECA11A1CF3D8000E42C0 /* Chain-iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -230,6 +232,7 @@
 		2061D1E01A2CB49C004F1E40 /* ISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISO8601DateFormatter.m; sourceTree = "<group>"; };
 		2061D1E51A2CB655004F1E40 /* BTCHashID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCHashID.h; sourceTree = "<group>"; };
 		2061D1E61A2CB655004F1E40 /* BTCHashID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCHashID.m; sourceTree = "<group>"; };
+		2061D1EB1A2CD8F3004F1E40 /* AddressUnspentsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressUnspentsTests.swift; sourceTree = "<group>"; };
 		207516A31A1B57D000155228 /* ChainCertificate.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = ChainCertificate.der; sourceTree = "<group>"; };
 		207516A41A1B57D000155228 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chain.h; sourceTree = "<group>"; };
 		207516A51A1B57D000155228 /* Chain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chain.m; sourceTree = "<group>"; };
@@ -500,6 +503,7 @@
 				20215E721A1CC8EA0031A271 /* BaseTests.swift */,
 				20D699C51A2784B400DD1F75 /* AddressInfoTests.swift */,
 				2061D1D01A28EB5E004F1E40 /* AddressTransactionsTest.swift */,
+				2061D1EB1A2CD8F3004F1E40 /* AddressUnspentsTests.swift */,
 				20E9BD2E1A1F82C000719259 /* TransactTests.swift */,
 				20E9BD531A1F85BB00719259 /* NotificationsTests.swift */,
 				20C4EC741A1CD3ED000E42C0 /* ChainTestsBase.h */,
@@ -1092,6 +1096,7 @@
 				20D699C61A2784B400DD1F75 /* AddressInfoTests.swift in Sources */,
 				2061D1D21A28EBA7004F1E40 /* AddressTransactionsTest.swift in Sources */,
 				20E9BD2F1A1F82C000719259 /* TransactTests.swift in Sources */,
+				2061D1EE1A2CD975004F1E40 /* AddressUnspentsTests.swift in Sources */,
 				20C4ED721A1CF751000E42C0 /* BaseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1153,6 +1158,7 @@
 				20D699C71A2784B400DD1F75 /* AddressInfoTests.swift in Sources */,
 				2061D1D31A28EBA8004F1E40 /* AddressTransactionsTest.swift in Sources */,
 				20E9BD301A1F82C000719259 /* TransactTests.swift in Sources */,
+				2061D1EF1A2CD976004F1E40 /* AddressUnspentsTests.swift in Sources */,
 				20C4ECE31A1CF46C000E42C0 /* ChainTestsBase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -142,8 +142,8 @@ static Chain *sharedInstance = nil;
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert(addresses != nil);
 
-    NSString* addr = [[self addressStringsForAddresses:addresses] componentsJoinedByString:@","];
-    NSString *pathString = [NSString stringWithFormat:@"addresses/%@/transactions", addr];
+    NSString* addrs = [[self addressStringsForAddresses:addresses] componentsJoinedByString:@","];
+    NSString *pathString = [NSString stringWithFormat:@"addresses/%@/transactions", addrs];
     if (limit > 0) {
         pathString = [pathString stringByAppendingString:[NSString stringWithFormat:@"?limit=%@", @(limit)]];
     }
@@ -213,19 +213,35 @@ static Chain *sharedInstance = nil;
 
 
 
-- (void)getAddressUnspents:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void)getAddressUnspents:(id)address completionHandler:(void (^)(NSArray *unspentOutputs, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(address != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"addresses/%@/unspents", address];
-    NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self getAddressesUnspents:@[address] completionHandler:completionHandler];
 }
 
-- (void)getAddressesUnspents:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void)getAddressesUnspents:(NSArray *)addresses completionHandler:(void (^)(NSArray *unspentOutputs, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(addresses != nil);
 
-    NSString *joinedAddresses = [addresses componentsJoinedByString:@","];
-    [self getAddressUnspents:joinedAddresses completionHandler:completionHandler];
+    NSString *addrs = [[self addressStringsForAddresses:addresses] componentsJoinedByString:@","];
+    NSString *pathString = [NSString stringWithFormat:@"addresses/%@/unspents", addrs];
+    NSURL *url = [self.connection URLWithPath:pathString];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+
+        NSMutableArray* results = [NSMutableArray array];
+        for (NSDictionary* txoutdict in dictionary[@"results"]) {
+            BTCTransactionOutput* txout = [self transactionOutputWithDictionary:txoutdict];
+            [results addObject:txout];
+        }
+
+        completionHandler(results, nil);
+    }];
 }
 
 
@@ -485,27 +501,33 @@ static Chain *sharedInstance = nil;
 #pragma mark - Helpers
 
 
+- (NSString*) addressStringForAddress:(id)addr
+{
+    if ([addr isKindOfClass:[BTCAddress class]])
+    {
+        return ((BTCAddress*)addr).base58String;
+    }
+    else if ([addr isKindOfClass:[NSString class]])
+    {
+        return addr;
+    }
+    else
+    {
+        [NSException raise:@"Chain: unsupported address type"
+                    format:@"Addresses must be of type NSString or BTCAddress. Unsupported type detected: %@", [addr class]];
+    }
+    return nil;
+}
+
 - (NSArray*) addressStringsForAddresses:(NSArray*)addrs
 {
     NSMutableArray* addrStrings = [NSMutableArray array];
     for (id addr in addrs) {
-        if ([addr isKindOfClass:[BTCAddress class]])
-        {
-            [addrStrings addObject:((BTCAddress*)addr).base58String];
-        }
-        else if ([addr isKindOfClass:[NSString class]])
-        {
-            [addrStrings addObject:addr];
-        }
-        else
-        {
-            [NSException raise:@"Chain: unsupported address type"
-                        format:@"Addresses must be of type NSString or BTCAddress. Unsupported type detected: %@", [addr class]];
-        }
+        NSString* s = [self addressStringForAddress:addr];
+        [addrStrings addObject:s];
     }
     return addrStrings;
 }
-
 
 - (NSArray*) addressesForAddressStrings:(NSArray*)addressStrings
 {
@@ -522,6 +544,7 @@ static Chain *sharedInstance = nil;
 {
     return [self transactionWithDictionary:dict allowTruncated:NO];
 }
+
 - (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated
 {
     // Will be used below to check that we constructed transaction correctly.
@@ -531,39 +554,13 @@ static Chain *sharedInstance = nil;
 
     tx.lockTime = [dict[@"lock_time"] unsignedIntValue];
 
-    for (NSDictionary* inputDict in dict[@"inputs"])
-    {
-        BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
-
-        if (!inputDict[@"script_signature"] && inputDict[@"coinbase"])
-        {
-            txin.coinbaseData = BTCDataWithHexString(inputDict[@"coinbase"]);
-        }
-        else
-        {
-            txin.previousTransactionID = inputDict[@"output_hash"];
-            txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
-            txin.signatureScript = [[BTCScript alloc] initWithString:inputDict[@"script_signature"]];
-            NSAssert(txin.signatureScript, @"Must have non-nil script signature");
-        }
-
-        txin.sequence = [inputDict[@"sequence"] unsignedIntValue];
-
-        txin.userInfo = @{
-                          @"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]],
-                          };
-        txin.value = [inputDict[@"value"] longLongValue];
+    for (NSDictionary* inputDict in dict[@"inputs"]) {
+        BTCTransactionInput* txin = [self transactionInputWithDictionary:inputDict];
         [tx addInput:txin];
     }
 
     for (NSDictionary* outputDict in dict[@"outputs"]) {
-        BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
-        txout.value = [outputDict[@"value"] longLongValue];
-        txout.script = [[BTCScript alloc] initWithData:BTCDataWithHexString(outputDict[@"script_hex"])];
-        txout.userInfo = @{
-                          @"addresses": [self addressesForAddressStrings:outputDict[@"addresses"]],
-                        };
-        txout.spent = [outputDict[@"spent"] boolValue];
+        BTCTransactionOutput* txout = [self transactionOutputWithDictionary:outputDict];
         [tx addOutput:txout];
     }
 
@@ -596,5 +593,54 @@ static Chain *sharedInstance = nil;
     }
     return tx;
 }
+
+- (BTCTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict
+{
+    BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
+
+    if (!inputDict[@"script_signature"] && inputDict[@"coinbase"])
+    {
+        txin.coinbaseData = BTCDataWithHexString(inputDict[@"coinbase"]);
+    }
+    else
+    {
+        txin.previousTransactionID = inputDict[@"output_hash"];
+        txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
+        txin.signatureScript = [[BTCScript alloc] initWithString:inputDict[@"script_signature"]];
+        NSAssert(txin.signatureScript, @"Must have non-nil script signature");
+    }
+
+    txin.sequence = [inputDict[@"sequence"] unsignedIntValue];
+
+    txin.userInfo = @{
+                      @"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]],
+                      };
+    txin.value = [inputDict[@"value"] longLongValue];
+    return txin;
+}
+
+- (BTCTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict
+{
+    BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
+    txout.value = [outputDict[@"value"] longLongValue];
+    txout.script = [[BTCScript alloc] initWithData:BTCDataWithHexString(outputDict[@"script_hex"])];
+    txout.userInfo = @{
+                       @"addresses": [self addressesForAddressStrings:outputDict[@"addresses"]],
+                       };
+    txout.spent = [outputDict[@"spent"] boolValue];
+
+    // Available in unspents API
+    if (outputDict[@"confirmations"] && outputDict[@"confirmations"] != [NSNull null]) {
+        txout.confirmations = [outputDict[@"confirmations"] unsignedIntegerValue];
+    }
+
+    // Available in unspents API
+    if (outputDict[@"output_index"] && outputDict[@"output_index"] != [NSNull null]) {
+        txout.index = [outputDict[@"output_index"] unsignedIntValue];
+    }
+    return txout;
+}
+
+
 
 @end

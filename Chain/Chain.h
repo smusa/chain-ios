@@ -56,7 +56,7 @@ extern NSString* const ChainAPIVersion1;
 
 #pragma mark - Transactions By Address
 
-// Returns a list of transactions (BTCTransaction objects) for a given address or address.
+// Returns a list of transactions (BTCTransaction objects) for a given address or a list of addresses.
 // Each address instance could be an NSString or BTCAddress.
 // Optional `limit` parameter specifies the maximum amount of transactions to be returned (0 meaning not limit).
 // Each transaction has the following informational properties set:
@@ -78,8 +78,16 @@ extern NSString* const ChainAPIVersion1;
 
 #pragma mark - Unspent Outputs By Address
 
-- (void)getAddressUnspents:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getAddressesUnspents:(NSArray *)addresses completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+// Returns a list of unspent outputs (BTCTransactionOutput instances) for a given address or a list of addresses.
+// Each address instance could be an NSString or BTCAddress.
+// Each output instance has the following informational properties set:
+// - index: Int (index in its transaction)
+// - confirmations: Int
+// - spent: Bool
+// - userInfo["addresses"]: [BTCAddress] (addresses used in each input)
+- (void)getAddressUnspents:(id)address completionHandler:(void (^)(NSArray *unspentOutputs, NSError *error))completionHandler;
+- (void)getAddressesUnspents:(NSArray *)addresses completionHandler:(void (^)(NSArray *unspentOutputs, NSError *error))completionHandler;
 
 
 #pragma mark - OP_RETURN

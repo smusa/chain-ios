@@ -9,6 +9,14 @@
 /* Begin PBXBuildFile section */
 		2061D1D21A28EBA7004F1E40 /* AddressTransactionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1D01A28EB5E004F1E40 /* AddressTransactionsTest.swift */; };
 		2061D1D31A28EBA8004F1E40 /* AddressTransactionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1D01A28EB5E004F1E40 /* AddressTransactionsTest.swift */; };
+		2061D1E11A2CB49C004F1E40 /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2061D1DF1A2CB49C004F1E40 /* ISO8601DateFormatter.h */; };
+		2061D1E21A2CB49C004F1E40 /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2061D1DF1A2CB49C004F1E40 /* ISO8601DateFormatter.h */; };
+		2061D1E31A2CB49C004F1E40 /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1E01A2CB49C004F1E40 /* ISO8601DateFormatter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2061D1E41A2CB49C004F1E40 /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1E01A2CB49C004F1E40 /* ISO8601DateFormatter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		2061D1E71A2CB655004F1E40 /* BTCHashID.h in Headers */ = {isa = PBXBuildFile; fileRef = 2061D1E51A2CB655004F1E40 /* BTCHashID.h */; };
+		2061D1E81A2CB655004F1E40 /* BTCHashID.h in Headers */ = {isa = PBXBuildFile; fileRef = 2061D1E51A2CB655004F1E40 /* BTCHashID.h */; };
+		2061D1E91A2CB655004F1E40 /* BTCHashID.m in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1E61A2CB655004F1E40 /* BTCHashID.m */; };
+		2061D1EA1A2CB655004F1E40 /* BTCHashID.m in Sources */ = {isa = PBXBuildFile; fileRef = 2061D1E61A2CB655004F1E40 /* BTCHashID.m */; };
 		208C498E1A1E50B80013A328 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 208C498D1A1E50B80013A328 /* libicucore.dylib */; };
 		208C49931A1E50E70013A328 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 208C49921A1E50E70013A328 /* libicucore.dylib */; };
 		20C4ECA21A1CF3D8000E42C0 /* Chain-iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 20C4ECA11A1CF3D8000E42C0 /* Chain-iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -218,6 +226,10 @@
 		20215E711A1CC8EA0031A271 /* ChainTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ChainTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		20215E721A1CC8EA0031A271 /* BaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseTests.swift; sourceTree = "<group>"; };
 		2061D1D01A28EB5E004F1E40 /* AddressTransactionsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressTransactionsTest.swift; sourceTree = "<group>"; };
+		2061D1DF1A2CB49C004F1E40 /* ISO8601DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISO8601DateFormatter.h; sourceTree = "<group>"; };
+		2061D1E01A2CB49C004F1E40 /* ISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISO8601DateFormatter.m; sourceTree = "<group>"; };
+		2061D1E51A2CB655004F1E40 /* BTCHashID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCHashID.h; sourceTree = "<group>"; };
+		2061D1E61A2CB655004F1E40 /* BTCHashID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCHashID.m; sourceTree = "<group>"; };
 		207516A31A1B57D000155228 /* ChainCertificate.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = ChainCertificate.der; sourceTree = "<group>"; };
 		207516A41A1B57D000155228 /* Chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chain.h; sourceTree = "<group>"; };
 		207516A51A1B57D000155228 /* Chain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chain.m; sourceTree = "<group>"; };
@@ -442,6 +454,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2061D1DE1A2CB473004F1E40 /* ISO-8601 Date Formatter */ = {
+			isa = PBXGroup;
+			children = (
+				2061D1DF1A2CB49C004F1E40 /* ISO8601DateFormatter.h */,
+				2061D1E01A2CB49C004F1E40 /* ISO8601DateFormatter.m */,
+			);
+			name = "ISO-8601 Date Formatter";
+			path = "iso-8601-date-formatter";
+			sourceTree = "<group>";
+		};
 		2075167D1A1B55F200155228 = {
 			isa = PBXGroup;
 			children = (
@@ -452,6 +474,7 @@
 				207516951A1B55F200155228 /* Tests */,
 				2075199D1A1B9B0000155228 /* CoreBitcoin */,
 				20751A321A1B9C2400155228 /* openssl */,
+				2061D1DE1A2CB473004F1E40 /* ISO-8601 Date Formatter */,
 				20C4EC9E1A1CF3D8000E42C0 /* Chain-iOS */,
 				20C4ECBC1A1CF416000E42C0 /* Chain-OSX */,
 				20C4ECAB1A1CF3D8000E42C0 /* Chain-iOSTests */,
@@ -547,6 +570,8 @@
 				207519CB1A1B9B0000155228 /* BTCEncryptedMessage.m */,
 				207519CC1A1B9B0000155228 /* BTCErrors.h */,
 				207519CD1A1B9B0000155228 /* BTCErrors.m */,
+				2061D1E51A2CB655004F1E40 /* BTCHashID.h */,
+				2061D1E61A2CB655004F1E40 /* BTCHashID.m */,
 				207519D01A1B9B0000155228 /* BTCKey.h */,
 				207519D11A1B9B0000155228 /* BTCKey.m */,
 				207519D41A1B9B0000155228 /* BTCKeychain.h */,
@@ -766,6 +791,7 @@
 				20C4ED001A1CF5A1000E42C0 /* BTCCurvePoint.h in Headers */,
 				20C4ECF41A1CF5A1000E42C0 /* BTCBlindSignature.h in Headers */,
 				20C4ED121A1CF5A1000E42C0 /* BTCOpcode.h in Headers */,
+				2061D1E11A2CB49C004F1E40 /* ISO8601DateFormatter.h in Headers */,
 				20D699C11A277B1F00DD1F75 /* ChainAddressInfo.h in Headers */,
 				20C4ECFE1A1CF5A1000E42C0 /* BTCCurrencyConverter.h in Headers */,
 				20C4ECEC1A1CF5A1000E42C0 /* BTCAddress.h in Headers */,
@@ -791,6 +817,7 @@
 				20C4ED201A1CF5A1000E42C0 /* BTCSignatureHashType.h in Headers */,
 				20C4ECF81A1CF5A1000E42C0 /* BTCBlockchainInfo.h in Headers */,
 				20C4ECE91A1CF5A1000E42C0 /* BTCUnitsAndLimits.h in Headers */,
+				2061D1E71A2CB655004F1E40 /* BTCHashID.h in Headers */,
 				20C4ECA21A1CF3D8000E42C0 /* Chain-iOS.h in Headers */,
 				20C4ED1A1A1CF5A1000E42C0 /* BTCQRCode.h in Headers */,
 				20E9BD471A1F85B300719259 /* ChainNotification.h in Headers */,
@@ -816,6 +843,7 @@
 				20C4ED411A1CF5A2000E42C0 /* BTCCurvePoint.h in Headers */,
 				20C4ED351A1CF5A2000E42C0 /* BTCBlindSignature.h in Headers */,
 				20C4ED531A1CF5A2000E42C0 /* BTCOpcode.h in Headers */,
+				2061D1E21A2CB49C004F1E40 /* ISO8601DateFormatter.h in Headers */,
 				20D699C21A277B1F00DD1F75 /* ChainAddressInfo.h in Headers */,
 				20C4ED3F1A1CF5A2000E42C0 /* BTCCurrencyConverter.h in Headers */,
 				20C4ED2D1A1CF5A2000E42C0 /* BTCAddress.h in Headers */,
@@ -841,6 +869,7 @@
 				20C4ED611A1CF5A2000E42C0 /* BTCSignatureHashType.h in Headers */,
 				20C4ED391A1CF5A2000E42C0 /* BTCBlockchainInfo.h in Headers */,
 				20C4ED2A1A1CF5A2000E42C0 /* BTCUnitsAndLimits.h in Headers */,
+				2061D1E81A2CB655004F1E40 /* BTCHashID.h in Headers */,
 				20C4ECC01A1CF416000E42C0 /* Chain-OSX.h in Headers */,
 				20C4ED5B1A1CF5A2000E42C0 /* BTCQRCode.h in Headers */,
 				20E9BD481A1F85B300719259 /* ChainNotification.h in Headers */,
@@ -1040,10 +1069,12 @@
 				20C4ED241A1CF5A1000E42C0 /* BTCTransactionBuilder.m in Sources */,
 				20D699BA1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */,
 				20C4ED011A1CF5A1000E42C0 /* BTCCurvePoint.m in Sources */,
+				2061D1E31A2CB49C004F1E40 /* ISO8601DateFormatter.m in Sources */,
 				20C4ECFD1A1CF5A1000E42C0 /* BTCChainCom.m in Sources */,
 				20C4ECFF1A1CF5A1000E42C0 /* BTCCurrencyConverter.m in Sources */,
 				20C4ECEF1A1CF5A1000E42C0 /* BTCBase58.m in Sources */,
 				20C4ED0B1A1CF5A1000E42C0 /* BTCKeychain.m in Sources */,
+				2061D1E91A2CB655004F1E40 /* BTCHashID.m in Sources */,
 				20C4ED091A1CF5A1000E42C0 /* BTCKey.m in Sources */,
 				20C4ED261A1CF5A1000E42C0 /* BTCTransactionInput.m in Sources */,
 				20E9BD4D1A1F85B300719259 /* ChainNotificationResult.m in Sources */,
@@ -1099,10 +1130,12 @@
 				20C4ED651A1CF5A2000E42C0 /* BTCTransactionBuilder.m in Sources */,
 				20D699BB1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */,
 				20C4ED421A1CF5A2000E42C0 /* BTCCurvePoint.m in Sources */,
+				2061D1E41A2CB49C004F1E40 /* ISO8601DateFormatter.m in Sources */,
 				20C4ED3E1A1CF5A2000E42C0 /* BTCChainCom.m in Sources */,
 				20C4ED401A1CF5A2000E42C0 /* BTCCurrencyConverter.m in Sources */,
 				20C4ED301A1CF5A2000E42C0 /* BTCBase58.m in Sources */,
 				20C4ED4C1A1CF5A2000E42C0 /* BTCKeychain.m in Sources */,
+				2061D1EA1A2CB655004F1E40 /* BTCHashID.m in Sources */,
 				20C4ED4A1A1CF5A2000E42C0 /* BTCKey.m in Sources */,
 				20C4ED671A1CF5A2000E42C0 /* BTCTransactionInput.m in Sources */,
 				20E9BD4E1A1F85B300719259 /* ChainNotificationResult.m in Sources */,
@@ -1181,6 +1214,7 @@
 					"$(SRCROOT)/CoreBitcoin/openssl/include",
 					"$(SRCROOT)/SocketRocket",
 					"$(SRCROOT)/SocketRocket/SocketRocket",
+					"$(SRCROOT)/iso-8601-date-formatter",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = (
@@ -1228,6 +1262,7 @@
 					"$(SRCROOT)/CoreBitcoin/openssl/include",
 					"$(SRCROOT)/SocketRocket",
 					"$(SRCROOT)/SocketRocket/SocketRocket",
+					"$(SRCROOT)/iso-8601-date-formatter",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = (

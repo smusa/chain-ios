@@ -191,7 +191,7 @@ class TransactTests : BaseTests {
             ]) { dictionary, error in
 
                 let txhash = dictionary["transaction_hash"] as String
-                let rawhash = BTCTransactionHashFromID(txhash)
+                let rawhash = BTCHashFromID(txhash)
 
                 NSLog("BROADCASTED TRANSACTION: %@", txhash)
 

@@ -4,3 +4,6 @@
 [submodule "SocketRocket"]
 	path = SocketRocket
 	url = https://github.com/chain-engineering/SocketRocket.git
+[submodule "iso-8601-date-formatter"]
+	path = iso-8601-date-formatter
+	url = git@github.com:boredzo/iso-8601-date-formatter.git

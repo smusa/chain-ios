@@ -8,6 +8,7 @@
 #import "ChainConnection.h"
 #import "ChainSigner.h"
 #import <CoreBitcoin/CoreBitcoin.h>
+#import <ISO8601DateFormatter.h>
 
 NSString* const ChainErrorDomain = @"com.chain.error";
 
@@ -156,11 +157,53 @@ static Chain *sharedInstance = nil;
 
         NSMutableArray* results = [NSMutableArray array];
 
+        // This will be our semaphore for async calls.
+        // There will be no racing conditions since all callbacks land on main queue.
+        __block int loadingTxsCount = 0;
+
         for (NSDictionary* txdict in dictionary[@"results"]) {
-            BTCTransaction* tx = [self transactionWithDictionary:txdict];
-            if (tx) [results addObject:tx];
+            BTCTransaction* tx = [self transactionWithDictionary:txdict allowTruncated:YES];
+            if (tx) {
+                [results addObject:tx];
+            } else {
+
+                // Tx has probably truncated number of inputs and outputs.
+                // Lets fetch it with getTransaction API.
+                // Note: these calls will run in parallel, but will finish on main thread (in random order).
+
+                // Remember position using a placeholder transaction.
+                [results addObject:[[BTCTransaction alloc] init]];
+                NSUInteger txindex = results.count - 1;
+
+                loadingTxsCount++;
+                NSLog(@"Chain: transaction is truncated, loading full data separately: %@ [#%@]", txdict[@"hash"], @(loadingTxsCount));
+                [self getTransaction:txdict[@"hash"] completionHandler:^(BTCTransaction *fullTx, NSError *error) {
+
+                    // If some other callback cancelled and returned, do nothing.
+                    if (loadingTxsCount == 0) return;
+
+                    loadingTxsCount--;
+
+                    // If we fail to fetch a single tx, return immediately.
+                    if (!fullTx) {
+                        loadingTxsCount = 0;
+                        completionHandler(nil, error);
+                        return;
+                    }
+
+                    results[txindex] = fullTx;
+
+                    if (loadingTxsCount == 0) {
+                        completionHandler(results, nil);
+                    }
+                }];
+            }
         }
-        completionHandler(results, nil);
+
+        // If all transactions are already here, return immediately.
+        if (loadingTxsCount == 0) {
+            completionHandler(results, nil);
+        }
     }];
 }
 
@@ -229,14 +272,31 @@ static Chain *sharedInstance = nil;
     [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
 }
 
+
+
 #pragma mark - Transaction
 
-- (void)getTransaction:(NSString *)txhash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+
+- (void)getTransaction:(id)txhash completionHandler:(void (^)(BTCTransaction *transaction, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(txhash != nil);
+    NSParameterAssert([txhash isKindOfClass:[NSString class]] || [txhash isKindOfClass:[NSData class]]);
+
+    if ([txhash isKindOfClass:[NSData class]]) {
+        txhash = BTCIDFromHash(txhash);
+    }
 
     NSString *pathString = [NSString stringWithFormat:@"transactions/%@", txhash];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        BTCTransaction* tx = [self transactionWithDictionary:dictionary];
+        NSAssert(tx, @"Should parse transaction correctly");
+        completionHandler(tx, nil);
+    }];
 }
 
 
@@ -458,24 +518,22 @@ static Chain *sharedInstance = nil;
     return addresses;
 }
 
-
 - (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict
 {
+    return [self transactionWithDictionary:dict allowTruncated:NO];
+}
+- (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated
+{
     // Will be used below to check that we constructed transaction correctly.
-    NSData* receivedHash = BTCTransactionHashFromID(dict[@"hash"]);
+    NSData* receivedHash = BTCHashFromID(dict[@"hash"]);
 
     BTCTransaction* tx = [[BTCTransaction alloc] init];
+
+    tx.lockTime = [dict[@"lock_time"] unsignedIntValue];
 
     for (NSDictionary* inputDict in dict[@"inputs"])
     {
         BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
-        txin.previousTransactionID = inputDict[@"output_hash"];
-        txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
-        txin.userInfo = @{
-                          @"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]],
-                          @"value": inputDict[@"value"] ?: @0.0,
-                          };
-//        txin.value = [inputDict[@"value"] longLongValue];
 
         if (!inputDict[@"script_signature"] && inputDict[@"coinbase"])
         {
@@ -483,16 +541,18 @@ static Chain *sharedInstance = nil;
         }
         else
         {
-            //     parts = input_dict["script_signature"].split(" ").map do |part|
-            //       if part.to_i.to_s == part // support "0" prefix.
-            //         BTC::Opcode.opcode_for_small_integer(part.to_i)
-            //       else
-            //         BTC::Data.data_from_hex(part)
-            //       end
-            //     end
-            //     txin.signature_script = (BTC::Script.new << parts)
+            txin.previousTransactionID = inputDict[@"output_hash"];
+            txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
             txin.signatureScript = [[BTCScript alloc] initWithString:inputDict[@"script_signature"]];
+            NSAssert(txin.signatureScript, @"Must have non-nil script signature");
         }
+
+        txin.sequence = [inputDict[@"sequence"] unsignedIntValue];
+
+        txin.userInfo = @{
+                          @"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]],
+                          };
+        txin.value = [inputDict[@"value"] longLongValue];
         [tx addInput:txin];
     }
 
@@ -502,26 +562,38 @@ static Chain *sharedInstance = nil;
         txout.script = [[BTCScript alloc] initWithData:BTCDataWithHexString(outputDict[@"script_hex"])];
         txout.userInfo = @{
                           @"addresses": [self addressesForAddressStrings:outputDict[@"addresses"]],
-                          @"spent": outputDict[@"spent"] ?: @NO
                         };
+        txout.spent = [outputDict[@"spent"] boolValue];
         [tx addOutput:txout];
     }
 
     // Check that hash of the resulting tx is the same as received one.
     if (![tx.transactionHash isEqual:receivedHash]) {
-        NSLog(@"Chain: received transaction %@ and failed to build proper binary copy. Could be non-canonical PUSHDATA somewhere. Dictionary: %@", dict[@"hash"], dict);
+        if (!allowTruncated)
+        {
+            NSLog(@"Chain: received transaction %@ and failed to build a proper binary copy. Could be non-canonical PUSHDATA somewhere. Dictionary: %@", dict[@"hash"], dict);
+            NSAssert([tx.transactionHash isEqual:receivedHash], @"Transaction hash must match.");
+        }
         return nil;
     }
 
-    //tx.blockDate =
+    ISO8601DateFormatter* dateFormatter = [[ISO8601DateFormatter alloc] init];
 
-    // tx.block_hash = BTC.hash_from_id(dict["block_hash"]) // block hash is reversed hex like txid.
-    // tx.block_height = dict["block_height"].to_i
-    // tx.block_time = dict["block_time"] ? Time.parse(dict["block_time"]) : nil
-    // tx.confirmations = dict["confirmations"].to_i
-    // tx.fee = dict["fees"] ? dict["fees"].to_i : nil
-    // tx.chain_received_at = dict["chain_received_at"] ? Time.parse(dict["chain_received_at"]) : nil
-    // tx
+    tx.blockHash = BTCHashFromID(dict[@"block_hash"]);
+    tx.blockHeight = [dict[@"block_height"] integerValue];
+    tx.blockDate = [dateFormatter dateFromString:dict[@"block_time"]];
+    tx.confirmations = [dict[@"confirmations"] integerValue];
+    if (dict[@"fees"]) {
+        tx.fee = [dict[@"fees"] longLongValue];
+    }
+
+    NSDate* chainReceivedDate = (dict[@"chain_received_at"] != [NSNull null]) ? [dateFormatter dateFromString:dict[@"chain_received_at"]] : nil;
+
+    if (chainReceivedDate) {
+        tx.userInfo = @{
+            @"chain_received_at": chainReceivedDate,
+        };
+    }
     return tx;
 }
 

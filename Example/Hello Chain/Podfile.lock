@@ -1,11 +1,13 @@
 PODS:
-  - Chain (2.0.0):
-    - CoreBitcoin (>= 0.5)
+  - Chain (3.0pre1):
+    - CoreBitcoin (~> 0.5.0)
+    - ISO8601DateFormatter (= 0.7)
     - SocketRocket
-  - CoreBitcoin (0.5.2):
+  - CoreBitcoin (0.5.3):
     - OpenSSL-Universal (= 1.0.1.h)
+  - ISO8601DateFormatter (0.7)
   - OpenSSL-Universal (1.0.1.h)
-  - SocketRocket (0.3.1-beta2)
+  - SocketRocket (0.2.0)
 
 DEPENDENCIES:
   - Chain (from `../../`)
@@ -15,9 +17,10 @@ EXTERNAL SOURCES:
     :path: ../../
 
 SPEC CHECKSUMS:
-  Chain: d62dbf8cc121c9d4e97cae8bf5e31ffe4f998c1d
-  CoreBitcoin: 871844e0505888bcc9411cd866994f389ceaf1be
+  Chain: 0a042617129ca3cabb61651f5beebf489d9454cf
+  CoreBitcoin: 959814821b345dffef2749a618dde36eb424d7f6
+  ISO8601DateFormatter: 59731cd880cf87e71b4fa95f0d6b713dcbc4cbce
   OpenSSL-Universal: 9c112508615ed33bb35f730eed820e93175a9dec
-  SocketRocket: 79a68ae186063c65e1fe6f638b1ae2927aa5f304
+  SocketRocket: 6c9cfd1592bea82262b4283dcda3a7de166af3b6
 
-COCOAPODS: 0.34.2
+COCOAPODS: 0.35.0

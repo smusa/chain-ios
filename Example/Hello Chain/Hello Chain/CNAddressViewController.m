@@ -59,13 +59,12 @@
                                             scale:[UIScreen mainScreen].scale];
 
     [[Chain sharedInstance] getAddress:self.addressField.text
-                     completionHandler:^(NSDictionary *dictionary, NSError *error) {
-                         if(error) {
+                     completionHandler:^(ChainAddressInfo* addressInfo, NSError *error) {
+                         if (!addressInfo) {
                              NSLog(@"Chain error: %@", error);
                              [self showBalance:error.localizedDescription ?: error.description ?: @"Error"];
                          } else {
-                             NSArray *result = [dictionary objectForKey:@"results"];
-                             double balance = [[[[result firstObject] objectForKey:@"total"] objectForKey:@"balance"] doubleValue];
+                             double balance = addressInfo.totalBalance;
                              float btc = balance / 100000000.0;
 
                              [self showBalance:[NSString stringWithFormat:@"%f BTC", btc]];

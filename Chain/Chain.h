@@ -8,6 +8,7 @@
 #import <CoreBitcoin/CoreBitcoin.h>
 
 #import "ChainAddressInfo.h"
+#import "ChainOpReturn.h"
 #import "ChainNotification.h"
 #import "ChainNotificationResult.h"
 #import "ChainNotificationObserver.h"
@@ -50,13 +51,13 @@ extern NSString* const ChainAPIVersion1;
 // Returns ChainAddressInfo instance for a given address (NSString or BTCAddress type).
 - (void) getAddress:(id)address completionHandler:(void (^)(ChainAddressInfo *addressInfo, NSError *error))completionHandler;
 
-// Returns an array of ChainAddressInfo instances for a list of addresses (NSString or BTCAddress types).
+// Returns an array of ChainAddressInfo instances for an array of addresses (NSString or BTCAddress types).
 - (void) getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSArray *addressInfos, NSError *error))completionHandler;
 
 
 #pragma mark - Transactions By Address
 
-// Returns a list of transactions (BTCTransaction objects) for a given address or a list of addresses.
+// Returns an array of transactions (BTCTransaction objects) for a given address or an array of addresses.
 // Each address instance could be an NSString or BTCAddress.
 // Optional `limit` parameter specifies the maximum amount of transactions to be returned (0 meaning not limit).
 // Each transaction has the following informational properties set:
@@ -79,7 +80,7 @@ extern NSString* const ChainAPIVersion1;
 #pragma mark - Unspent Outputs By Address
 
 
-// Returns a list of unspent outputs (BTCTransactionOutput instances) for a given address or a list of addresses.
+// Returns an array of unspent outputs (BTCTransactionOutput instances) for a given address or an array of addresses.
 // Each address instance could be an NSString or BTCAddress.
 // Each output instance has the following informational properties set:
 // - index: Int (index in its transaction)
@@ -92,16 +93,40 @@ extern NSString* const ChainAPIVersion1;
 
 #pragma mark - OP_RETURN
 
-- (void)getAddressOpReturns:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getTransactionOpReturn:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getBlockOpReturnsByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+// Returns an array of ChainOpReturn instances for a given address (NSString or BTCAddress).
+- (void)getAddressOpReturns:(id)address completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+
+// Returns a single ChainOpReturn instance for a given transaction.
+// If this transaction has not OP_RETURN outputs, returns nil (error equals nil too).
+// Transaction can be specified using one of the following types:
+// - NSString (transaction ID; reversed hash in hex)
+// - NSData (transaction Hash)
+// - BTCTransaction
+- (void)getTransactionOpReturn:(id)tx completionHandler:(void (^)(ChainOpReturn *opreturn, NSError *error))completionHandler;
+
+// Same as above, but returns an array of ChainOpReturn instances.
+// Currently supports only one instance, but may return more in the future.
+- (void)getTransactionOpReturns:(id)tx completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+
+// Returns an array of ChainOpReturn instances for a given block.
+// Block can be specified using one of the following types:
+// - NSString (block ID; reversed hash in hex)
+// - NSData (block hash)
+// - BTCBlockHeader
+// - BTCBlock
+- (void)getBlockOpReturnsByHash:(id)block completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+
+// Returns an array of ChainOpReturn instances for a block with a given height.
+- (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+
+// Returns an array of ChainOpReturn instances for the latest known block.
+- (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
 
 
 #pragma mark - Transaction
 
-// Accepts string hash ("transaction ID") or binary hash as NSData.
+// Loads complete transaction using transaction hash (NSData) or transaction ID (NSString):
 - (void)getTransaction:(id)txhash completionHandler:(void (^)(BTCTransaction *transaction, NSError *error))completionHandler;
 
 // Sends transaction represented as one of the following:

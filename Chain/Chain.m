@@ -248,44 +248,140 @@ static Chain *sharedInstance = nil;
 
 #pragma mark - OP_RETURN
 
-- (void)getAddressOpReturns:(NSString *)address completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+
+// Returns an array of ChainOpReturn instances for a given address (NSString or BTCAddress).
+- (void)getAddressOpReturns:(id)address completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(address != nil);
+
+    if ([address isKindOfClass:[BTCAddress class]]) {
+        address = [(BTCAddress*)address base58String];
+    }
 
     NSString *pathString = [NSString stringWithFormat:@"addresses/%@/op-returns", address];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        NSArray* opreturns = [self opreturnsWithDictionaries:dictionary[@"results"] error:&error];
+        completionHandler(opreturns, opreturns ? nil : error);
+    }];
 }
 
-- (void)getBlockOpReturnsByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+// Retrusn a single ChainOpReturn instance for a given transaction.
+// Transaction can be specified using one of the following types:
+// - NSString (transaction ID; reversed hash in hex)
+// - NSData (transaction Hash)
+// - BTCTransaction
+- (void)getTransactionOpReturn:(id)tx completionHandler:(void (^)(ChainOpReturn *opreturn, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(tx != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"block/%@/op-returns", hash];
-    NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self getTransactionOpReturns:tx completionHandler:^(NSArray *opreturns, NSError *error) {
+        completionHandler(opreturns.firstObject, error);
+    }];
 }
 
-- (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+// Same as above, but returns an array of ChainOpReturn instances.
+// Currently supports only one instance, but may return more in the future.
+- (void)getTransactionOpReturns:(id)tx completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(tx != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"block/%@/op-returns", @(height)];
+    NSString* txid = nil;
+
+    if ([tx isKindOfClass:[NSString class]]) {
+        txid = tx;
+    } else if ([tx isKindOfClass:[NSData class]]) {
+        txid = BTCIDFromHash(tx);
+    } else if ([tx isKindOfClass:[BTCTransaction class]]) {
+        txid = [(BTCTransaction*)tx transactionID];
+    } else {
+        [NSException raise:@"ChainException" format:@"Unexpected type for transaction identifier: %@", [tx class]];
+    }
+
+    // When backend API supports multiple op-returns per transaction,
+    // we will update this method to take advantage of it.
+    NSString *pathString = [NSString stringWithFormat:@"transactions/%@/op-return", txid];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        NSArray* opreturns = [self opreturnsWithDictionaries:@[dictionary] error:&error];
+        completionHandler(opreturns, opreturns ? nil : error);
+    }];
 }
 
-- (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+// Returns an array of ChainOpReturn instances for a given block.
+// Block can be specified using one of the following types:
+// - NSString (block ID; reversed hash in hex)
+// - NSData (block hash)
+// - BTCBlockHeader
+// - BTCBlock
+- (void)getBlockOpReturnsByHash:(id)block completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler  {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(block != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"block/latest/op-returns"];
+    NSString* blockid = nil;
+
+    if ([block isKindOfClass:[NSString class]]) {
+        blockid = block;
+    } else if ([block isKindOfClass:[NSData class]]) {
+        blockid = BTCIDFromHash(block);
+    } else if ([block isKindOfClass:[BTCBlock class]]) {
+        blockid = [(BTCBlock*)block blockID];
+    } else if ([block isKindOfClass:[BTCBlockHeader class]]) {
+        blockid = [(BTCBlockHeader*)block blockID];
+    } else {
+        [NSException raise:@"ChainException" format:@"Unexpected type for block identifier: %@", [block class]];
+    }
+
+    NSString *pathString = [NSString stringWithFormat:@"blocks/%@/op-returns", blockid];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        NSArray* opreturns = [self opreturnsWithDictionaries:dictionary[@"results"] error:&error];
+        completionHandler(opreturns, opreturns ? nil : error);
+    }];
 }
 
-- (void)getTransactionOpReturn:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+// Returns an array of ChainOpReturn instances for a block with a given height.
+- (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"transactions/%@/op-return", hash];
+    NSString *pathString = [NSString stringWithFormat:@"blocks/%@/op-returns", @(height)];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        NSArray* opreturns = [self opreturnsWithDictionaries:dictionary[@"results"] error:&error];
+        completionHandler(opreturns, opreturns ? nil : error);
+    }];
+}
+
+// Returns an array of ChainOpReturn instances for the latest known block.
+- (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+
+    NSString *pathString = [NSString stringWithFormat:@"blocks/latest/op-returns"];
+    NSURL *url = [self.connection URLWithPath:pathString];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        NSArray* opreturns = [self opreturnsWithDictionaries:dictionary[@"results"] error:&error];
+        completionHandler(opreturns, opreturns ? nil : error);
+    }];
 }
 
 
@@ -322,24 +418,22 @@ static Chain *sharedInstance = nil;
     NSString *pathString = [NSString stringWithFormat:@"transactions/send"];
     NSURL *url = [self.connection URLWithPath:pathString];
 
-    // If BTCTransaction provided, convert to hex.
+    NSDictionary *requestDictionary = nil;
+
     if ([tx isKindOfClass:[BTCTransaction class]]) {
         tx = ((BTCTransaction*)tx).data;
     }
 
-    // If NSData provided, convert to hex.
     if ([tx isKindOfClass:[NSData class]]) {
         tx = BTCHexStringFromData(tx);
     }
 
-    NSDictionary *requestDictionary = nil;
-
-    // If hex string provided, wrap it in {signed_hex: ...} dictionary.
     if ([tx isKindOfClass:[NSString class]]) {
         requestDictionary = @{@"signed_hex": tx};
-    } else {
-        // Template is dictionary, send as-is.
+    } else if ([tx isKindOfClass:[NSDictionary class]]) {
         requestDictionary = tx;
+    } else {
+        [NSException raise:@"ChainException" format:@"Unexpected type of transaction argument: %@", [tx class]];
     }
 
     [self.connection startPostTaskWithURL:url dictionary:requestDictionary completionHandler:^(NSDictionary *dictionary, NSError *error) {
@@ -658,6 +752,25 @@ static Chain *sharedInstance = nil;
     return txout;
 }
 
+- (NSArray*) opreturnsWithDictionaries:(NSArray*) dicts error:(NSError**)errorOut {
+
+    if (!dicts) {
+        if (errorOut) *errorOut = [NSError errorWithDomain:ChainErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"Missing OP_RETURNs."}];
+        return nil;
+    }
+
+    NSMutableArray* opreturns = [NSMutableArray array];
+    for (NSDictionary* dict in dicts) {
+        ChainOpReturn* opreturn = [[ChainOpReturn alloc] initWithDictionary:dict];
+        if (!opreturn) {
+            if (errorOut) *errorOut = [NSError errorWithDomain:ChainErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"Invalid OP_RETURN data."}];
+            return nil;
+        }
+        [opreturns addObject:opreturn];
+    }
+
+    return opreturns;
+}
 
 
 @end

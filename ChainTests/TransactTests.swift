@@ -188,14 +188,9 @@ class TransactTests : BaseTests {
                 [ "address": "mzRf7M6cUzRWWPCUPNu5f9swpAaBZBKg8K", "amount": 1200000 ],
                 [ "address": "mu4pn3U3frfjDCw1QsG8dxNh7qJTTJ7A3J", "amount": 20000 ]
             ]
-            ]) { dictionary, error in
+            ]) { (tx, error) in
 
-                let txhash = dictionary["transaction_hash"] as String
-                let rawhash = BTCHashFromID(txhash)
-
-                NSLog("BROADCASTED TRANSACTION: %@", txhash)
-
-                XCTAssert(rawhash.length == 32, "Must return a 256-bit transaction ID in hex.")
+                NSLog("BROADCASTED TRANSACTION: %@", tx.transactionID)
 
                 self.completeAsyncTask()
         }

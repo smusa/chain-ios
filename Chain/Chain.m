@@ -316,7 +316,7 @@ static Chain *sharedInstance = nil;
 }
 
 
-- (void)sendTransaction:(id)tx completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void)sendTransaction:(id)tx completionHandler:(void (^)(BTCTransaction* tx, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
     NSString *pathString = [NSString stringWithFormat:@"transactions/send"];
@@ -342,7 +342,24 @@ static Chain *sharedInstance = nil;
         requestDictionary = tx;
     }
 
-    [self.connection startPostTaskWithURL:url dictionary:requestDictionary completionHandler:completionHandler];
+    [self.connection startPostTaskWithURL:url dictionary:requestDictionary completionHandler:^(NSDictionary *dictionary, NSError *error) {
+
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        NSData* txhash = BTCHashFromID(dictionary[@"transaction_hash"]);
+        NSData* txdata = BTCDataWithHexString(dictionary[@"transaction_hex"]);
+
+        NSAssert(txhash, @"Tx hash must be returned");
+        NSAssert(txdata, @"Raw tx data in hex must be returned");
+
+        BTCTransaction* tx = [[BTCTransaction alloc] initWithData:txdata];
+
+        NSAssert([tx.transactionHash isEqual:txhash], @"Hashes must match.");
+
+        completionHandler(tx, nil);
+    }];
 }
 
 
@@ -368,7 +385,7 @@ static Chain *sharedInstance = nil;
 //     }
 //   ]
 // }
-- (void) transact:(NSDictionary*)params completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler
+- (void) transact:(NSDictionary*)params completionHandler:(void (^)(BTCTransaction *tx, NSError *error))completionHandler
 {
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert([params[@"inputs"] isKindOfClass:[NSArray class]]);

@@ -109,7 +109,8 @@ extern NSString* const ChainAPIVersion1;
 // - NSData (raw binary)
 // - NSString (raw binary in hex)
 // - NSDictionary (signed tx template)
-- (void)sendTransaction:(id)tx completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+// Returns a fully signed transaction that was broadcasted.
+- (void)sendTransaction:(id)tx completionHandler:(void (^)(BTCTransaction* tx, NSError *error))completionHandler;
 
 
 #pragma mark - Transaction Builder
@@ -120,7 +121,7 @@ extern NSString* const ChainAPIVersion1;
 //                                    @"private_key": <hex|WIF|BTCKey>}
 // params[@"outputs"] should contain @{@"address": <base58-encoded address>,
 //                                     @"amount": @(satoshis)}
-- (void) transact:(NSDictionary*)params completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+- (void) transact:(NSDictionary*)params completionHandler:(void (^)(BTCTransaction *tx, NSError *error))completionHandler;
 
 // Makes a request to build a transaction with given parameters.
 - (void) buildTransaction:(NSDictionary*)params completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;

@@ -112,19 +112,24 @@ extern NSString* const ChainAPIVersion1;
 // Returns an array of ChainOpReturn instances for a given block.
 // Block can be specified using one of the following types:
 // - NSString (block ID; reversed hash in hex)
+// - NSNumber (block height)
 // - NSData (block hash)
 // - BTCBlockHeader
 // - BTCBlock
-- (void)getBlockOpReturnsByHash:(id)block completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+- (void)getBlockOpReturns:(id)block completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+
+// Returns an array of ChainOpReturn instances for a block with a given ID or binary hash.
+- (void)getBlockOpReturnsByHash:(id)blockHash completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
 
 // Returns an array of ChainOpReturn instances for a block with a given height.
 - (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
 
 // Returns an array of ChainOpReturn instances for the latest known block.
-- (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
+- (void)getLatestBlockOpReturns:(void (^)(NSArray *opreturns, NSError *error))completionHandler;
 
 
 #pragma mark - Transaction
+
 
 // Loads complete transaction using transaction hash (NSData) or transaction ID (NSString):
 - (void)getTransaction:(id)txhash completionHandler:(void (^)(BTCTransaction *transaction, NSError *error))completionHandler;
@@ -139,6 +144,7 @@ extern NSString* const ChainAPIVersion1;
 
 
 #pragma mark - Transaction Builder
+
 
 // Builds, signs and sends transaction in one call.
 // Response is the same as from `-sendTransaction:completionHandler:` call.
@@ -157,14 +163,34 @@ extern NSString* const ChainAPIVersion1;
 
 
 
-#pragma mark - Block
+#pragma mark - Blocks
 
-- (void)getBlockByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getBlockByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
-- (void)getLatestBlockWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
+
+// Returns BTCBlockHeader instance with a list of transaction IDs (userInfo["transactionIDs"])
+// Block can be identified by either:
+// - NSNumber (height)
+// - NSString (block ID, reversed block hash in hex)
+// - NSData (block hash)
+// - BTCBlockHeader
+// - BTCBlock
+- (void) getBlockHeader:(id)block completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler;
+- (void) getBlockHeaderByHeight:(NSInteger)height completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler;
+- (void) getLatestBlockHeader:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler;
+
+// Returns a complete block with all transactions.
+// Block can be identified by either:
+// - NSNumber (height)
+// - NSString (block ID, reversed block hash in hex)
+// - NSData (block hash)
+// - BTCBlockHeader
+// - BTCBlock
+- (void) getBlock:(id)block completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler;
+- (void) getLatestBlock:(void (^)(BTCBlock *block, NSError *error))completionHandler;
+
 
 
 #pragma mark - Notifications
+
 
 // Returns an observer that connects to Chain and begins receiving events.
 // Call 'disconnect' on observer instance to stop receiving notifications.

@@ -322,23 +322,11 @@ static Chain *sharedInstance = nil;
 // - NSData (block hash)
 // - BTCBlockHeader
 // - BTCBlock
-- (void)getBlockOpReturnsByHash:(id)block completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler  {
+- (void)getBlockOpReturns:(id)block completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert(block != nil);
 
-    NSString* blockid = nil;
-
-    if ([block isKindOfClass:[NSString class]]) {
-        blockid = block;
-    } else if ([block isKindOfClass:[NSData class]]) {
-        blockid = BTCIDFromHash(block);
-    } else if ([block isKindOfClass:[BTCBlock class]]) {
-        blockid = [(BTCBlock*)block blockID];
-    } else if ([block isKindOfClass:[BTCBlockHeader class]]) {
-        blockid = [(BTCBlockHeader*)block blockID];
-    } else {
-        [NSException raise:@"ChainException" format:@"Unexpected type for block identifier: %@", [block class]];
-    }
+    NSString* blockid = [self blockIDForBlockArgument:block];
 
     NSString *pathString = [NSString stringWithFormat:@"blocks/%@/op-returns", blockid];
     NSURL *url = [self.connection URLWithPath:pathString];
@@ -352,24 +340,17 @@ static Chain *sharedInstance = nil;
     }];
 }
 
+- (void)getBlockOpReturnsByHash:(id)blockhash completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler  {
+    [self getBlockOpReturns:blockhash completionHandler:completionHandler];
+}
+
 // Returns an array of ChainOpReturn instances for a block with a given height.
 - (void)getBlockOpReturnsByHeight:(NSInteger)height completionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
-
-    NSString *pathString = [NSString stringWithFormat:@"blocks/%@/op-returns", @(height)];
-    NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
-        if (!dictionary) {
-            completionHandler(nil, error);
-            return;
-        }
-        NSArray* opreturns = [self opreturnsWithDictionaries:dictionary[@"results"] error:&error];
-        completionHandler(opreturns, opreturns ? nil : error);
-    }];
+    [self getBlockOpReturns:@(height) completionHandler:completionHandler];
 }
 
 // Returns an array of ChainOpReturn instances for the latest known block.
-- (void)getLatestBlockOpReturnsWithCompletionHandler:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
+- (void)getLatestBlockOpReturns:(void (^)(NSArray *opreturns, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
     NSString *pathString = [NSString stringWithFormat:@"blocks/latest/op-returns"];
@@ -546,32 +527,112 @@ static Chain *sharedInstance = nil;
 
 
 
-#pragma mark - Block
+#pragma mark - Blocks
 
 
-- (void)getBlockByHash:(NSString *)hash completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void) getBlockHeader:(id)block completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(block != nil);
 
-    NSString *pathString = [NSString stringWithFormat:@"blocks/%@", hash];
+    NSString* blockid = [self blockIDForBlockArgument:block];
+
+    NSString *pathString = [NSString stringWithFormat:@"blocks/%@", blockid];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        BTCBlockHeader* bh = [self blockHeaderWithDictionary:dictionary error:&error];
+        completionHandler(bh, bh ? nil : error);
+    }];
 }
 
-- (void)getBlockByHeight:(NSInteger)height completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
-
-    NSString *pathString = [NSString stringWithFormat:@"blocks/%@", @(height)];
-    NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+- (void) getBlockHeaderByHeight:(NSInteger)height completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler {
+    [self getBlockHeader:@(height) completionHandler:completionHandler];
 }
 
-- (void)getLatestBlockWithCompletionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler {
+- (void) getLatestBlockHeader:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
     NSString *pathString = [NSString stringWithFormat:@"blocks/latest"];
     NSURL *url = [self.connection URLWithPath:pathString];
-    [self.connection startGetTaskWithURL:url completionHandler:completionHandler];
+    [self.connection startGetTaskWithURL:url completionHandler:^(NSDictionary *dictionary, NSError *error) {
+        if (!dictionary) {
+            completionHandler(nil, error);
+            return;
+        }
+        BTCBlockHeader* bh = [self blockHeaderWithDictionary:dictionary error:&error];
+        completionHandler(bh, bh ? nil : error);
+    }];
 }
+
+- (void) getBlock:(id)block completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(block != nil);
+
+    [self getBlockHeader:block completionHandler:^(BTCBlockHeader *blockHeader, NSError *error) {
+        if (!blockHeader) {
+            completionHandler(nil, error);
+            return;
+        }
+        [self getFullBlock:blockHeader completionHandler:completionHandler];
+    }];
+}
+
+- (void) getLatestBlock:(void (^)(BTCBlock *block, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+
+    [self getLatestBlockHeader:^(BTCBlockHeader *blockHeader, NSError *error) {
+        if (!blockHeader) {
+            completionHandler(nil, error);
+            return;
+        }
+        [self getFullBlock:blockHeader completionHandler:completionHandler];
+    }];
+}
+
+
+// Helper to load all txs for a given block header.
+- (void) getFullBlock:(BTCBlockHeader*)bh completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler {
+    NSParameterAssert(completionHandler != nil);
+    NSParameterAssert(bh != nil);
+
+    __block int requestsCount = 0;
+
+    BTCBlock* block = [[BTCBlock alloc] initWithHeader:bh];
+    NSMutableArray* txs = [NSMutableArray array];
+
+    for (NSString* txid in bh.userInfo[@"transactionIDs"]) {
+
+        [txs addObject:[NSNull null]]; // placeholder
+        NSUInteger txindex = txs.count - 1;
+
+        requestsCount++;
+        [self getTransaction:txid completionHandler:^(BTCTransaction *transaction, NSError *error) {
+            if (requestsCount == 0) return; // was cancelled.
+
+            if (!transaction) {
+                requestsCount = 0; // cancel and fail.
+                completionHandler(nil, error);
+                return;
+            }
+
+            requestsCount--;
+            txs[txindex] = transaction;
+            if (requestsCount == 0) {
+                block.transactions = txs;
+                completionHandler(block, nil);
+            }
+        }];
+    }
+
+    if (requestsCount == 0) {
+        completionHandler(block, nil);
+    }
+}
+
+
 
 
 
@@ -609,11 +670,13 @@ static Chain *sharedInstance = nil;
 
 
 
-#pragma mark - Helpers
 
 
-- (NSString*) addressStringForAddress:(id)addr
-{
+#pragma mark - Data Conversion Helpers
+
+
+
+- (NSString*) addressStringForAddress:(id)addr {
     if ([addr isKindOfClass:[BTCAddress class]])
     {
         return ((BTCAddress*)addr).base58String;
@@ -630,8 +693,7 @@ static Chain *sharedInstance = nil;
     return nil;
 }
 
-- (NSArray*) addressStringsForAddresses:(NSArray*)addrs
-{
+- (NSArray*) addressStringsForAddresses:(NSArray*)addrs {
     NSMutableArray* addrStrings = [NSMutableArray array];
     for (id addr in addrs) {
         NSString* s = [self addressStringForAddress:addr];
@@ -640,8 +702,7 @@ static Chain *sharedInstance = nil;
     return addrStrings;
 }
 
-- (NSArray*) addressesForAddressStrings:(NSArray*)addressStrings
-{
+- (NSArray*) addressesForAddressStrings:(NSArray*)addressStrings {
     NSMutableArray* addresses = [NSMutableArray array];
     for (id str in addressStrings)
     {
@@ -651,13 +712,11 @@ static Chain *sharedInstance = nil;
     return addresses;
 }
 
-- (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict
-{
+- (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict {
     return [self transactionWithDictionary:dict allowTruncated:NO];
 }
 
-- (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated
-{
+- (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated {
     // Will be used below to check that we constructed transaction correctly.
     NSData* receivedHash = BTCHashFromID(dict[@"hash"]);
 
@@ -680,7 +739,7 @@ static Chain *sharedInstance = nil;
         if (!allowTruncated)
         {
             NSLog(@"Chain: received transaction %@ and failed to build a proper binary copy. Could be non-canonical PUSHDATA somewhere. Dictionary: %@", dict[@"hash"], dict);
-            NSAssert([tx.transactionHash isEqual:receivedHash], @"Transaction hash must match.");
+            NSAssert([tx.transactionHash isEqual:receivedHash], @"Transaction hash must match the declared hash.");
         }
         return nil;
     }
@@ -705,19 +764,21 @@ static Chain *sharedInstance = nil;
     return tx;
 }
 
-- (BTCTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict
-{
+- (BTCTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict {
     BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
 
-    if (!inputDict[@"script_signature"] && inputDict[@"coinbase"])
+    NSString* scriptSig = [self filterNSNull:inputDict[@"script_signature"]];
+    NSString* coinbaseHex = [self filterNSNull:inputDict[@"coinbase"]];
+
+    if (!scriptSig && coinbaseHex)
     {
-        txin.coinbaseData = BTCDataWithHexString(inputDict[@"coinbase"]);
+        txin.coinbaseData = BTCDataWithHexString(coinbaseHex);
     }
     else
     {
         txin.previousTransactionID = inputDict[@"output_hash"];
         txin.previousIndex = [inputDict[@"output_index"] unsignedIntValue];
-        txin.signatureScript = [[BTCScript alloc] initWithString:inputDict[@"script_signature"]];
+        txin.signatureScript = [[BTCScript alloc] initWithString:scriptSig];
         NSAssert(txin.signatureScript, @"Must have non-nil script signature");
     }
 
@@ -730,8 +791,7 @@ static Chain *sharedInstance = nil;
     return txin;
 }
 
-- (BTCTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict
-{
+- (BTCTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict {
     BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
     txout.value = [outputDict[@"value"] longLongValue];
     txout.script = [[BTCScript alloc] initWithData:BTCDataWithHexString(outputDict[@"script_hex"])];
@@ -772,5 +832,82 @@ static Chain *sharedInstance = nil;
     return opreturns;
 }
 
+- (NSString*) blockIDForBlockArgument:(id)block {
+
+    if ([block isKindOfClass:[NSString class]]) { // block id
+        return block;
+    } else if ([block isKindOfClass:[NSNumber class]]) { // height
+        return block;
+    } else if ([block isKindOfClass:[NSData class]]) { // hash
+        return BTCIDFromHash(block);
+    } else if ([block isKindOfClass:[BTCBlock class]]) {
+        return [(BTCBlock*)block blockID];
+    } else if ([block isKindOfClass:[BTCBlockHeader class]]) {
+        return [(BTCBlockHeader*)block blockID];
+    } else {
+        [NSException raise:@"ChainException" format:@"Unexpected type for block identifier: %@", [block class]];
+    }
+    return nil;
+}
+
+- (BTCBlockHeader*) blockHeaderWithDictionary:(NSDictionary*)dict error:(NSError**)errorOut {
+
+    /*
+     {
+         "hash": "00000000000004099303e4ec0e4854dca15eeea112e855e6afe437e26f1910d3",
+         "previous_block_hash": "0000000000000278f6c049cec04014ca44623032be15e587c447b1740f730725",
+         "height": 146269,
+         "confirmations": 186320,
+         "version": 1,
+         "merkle_root": "89ed3429766cdea59499b4d1f913a541f2309ea9fad4d496cdde095dca897d2b",
+         "time": "2011-09-21T09:14:21.000Z",
+         "nonce": 493165096,
+         "difficulty": 1755425.3203287,
+         "bits": "1a098ea5",
+         "transaction_hashes": [
+            "89ed3429766cdea59499b4d1f913a541f2309ea9fad4d496cdde095dca897d2b"
+         ]
+     }
+    */
+
+    // Will be used below to check that we reconstructed block header correctly.
+    NSData* receivedHash = BTCHashFromID(dict[@"hash"]);
+
+    BTCBlockHeader* bh = [[BTCBlockHeader alloc] init];
+    bh.version = [dict[@"version"] intValue];
+    bh.previousBlockID = [self filterNSNull:dict[@"previous_block_hash"]];
+    bh.merkleRootHash = BTCHashFromID(dict[@"merkle_root"]);
+
+    ISO8601DateFormatter* dateFormatter = [[ISO8601DateFormatter alloc] init];
+    bh.time = (uint32_t)round([[dateFormatter dateFromString:dict[@"time"]] timeIntervalSince1970]);
+    bh.nonce = [dict[@"nonce"] unsignedIntValue];
+    NSData* bitsDataLE = BTCReversedData(BTCDataWithHexString(dict[@"bits"]));
+    if (bitsDataLE.length < 4) {
+        NSMutableData* d2 = [bitsDataLE mutableCopy];
+        d2.length = 4; // setter zero-fills extra bytes.
+        bitsDataLE = d2;
+    }
+    bh.difficultyTarget = *((uint32_t*)bitsDataLE.bytes);
+
+    // Check that hash of the resulting tx is the same as received one.
+    if (![bh.blockHash isEqual:receivedHash]) {
+        NSLog(@"Chain: received block header %@ and failed to build a proper binary copy. Dictionary: %@", dict[@"hash"], dict);
+        NSAssert([bh.blockHash isEqual:receivedHash], @"Block header hash must match the declared hash.");
+        if (errorOut) *errorOut = [NSError errorWithDomain:ChainErrorDomain code:0 userInfo:@{NSLocalizedDescriptionKey: @"Invalid block header: hashes do not match."}];
+        return nil;
+    }
+
+    // Info properties:
+
+    bh.height = [dict[@"height"] integerValue];
+    bh.confirmations = [dict[@"confirmations"] unsignedIntegerValue];
+    bh.userInfo = @{@"transactionIDs": dict[@"transaction_hashes"] ?: @[]};
+    return bh;
+}
+
+- (id) filterNSNull:(id)obj {
+    if (obj == [NSNull null]) return nil;
+    return obj;
+}
 
 @end

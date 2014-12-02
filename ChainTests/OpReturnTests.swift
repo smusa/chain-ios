@@ -69,7 +69,7 @@ class OpReturnTests : BaseTests {
 
     func testLatestBlockOpReturns() {
         self.shouldCompleteIn(10.0)
-        self.client.getLatestBlockOpReturnsWithCompletionHandler { opreturns, error in
+        self.client.getLatestBlockOpReturns { opreturns, error in
             XCTAssert(opreturns != nil)
             self.completeAsyncTask()
         }

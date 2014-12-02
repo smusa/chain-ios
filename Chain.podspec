@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.osx.frameworks     = %w{Foundation Security CoreServices}
   s.libraries          = "icucore"
 
-  s.dependency 'CoreBitcoin', ">=0.6"
+  s.dependency 'CoreBitcoin', "~>0.6.0"
   s.dependency 'ISO8601DateFormatter', "=0.7"
 
   # We use a built-in fork until SocketRocket merges support for anchor certificates

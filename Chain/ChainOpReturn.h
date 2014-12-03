@@ -28,6 +28,9 @@
 // List of BTCAddresses associated with the outputs of the transaction.
 @property(nonatomic, readonly) NSArray* receiverAddresses;
 
+// Dictionary representation of the OP_RETURN info.
+@property(nonatomic, readonly) NSDictionary* dictionary;
+
 - (id) initWithDictionary:(NSDictionary*)dictionary;
 
 @end

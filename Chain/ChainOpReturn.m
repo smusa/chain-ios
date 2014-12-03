@@ -15,6 +15,7 @@
 @property(nonatomic, readwrite) NSString* text;
 @property(nonatomic, readwrite) NSArray* senderAddresses;
 @property(nonatomic, readwrite) NSArray* receiverAddresses;
+@property(nonatomic, readwrite) NSDictionary* dictionary;
 @end
 
 @implementation ChainOpReturn
@@ -23,6 +24,7 @@
 {
     if (self = [super init])
     {
+        self.dictionary = dictionary;
         self.transactionID = [self ensure:dictionary[@"transaction_hash"] isKindOf:[NSString class]];
         self.transactionHash = BTCHashFromID(self.transactionID);
 
@@ -44,7 +46,7 @@
         {
             NSMutableArray* addrs = [NSMutableArray array];
             for (NSString* string in [self ensure:dictionary[@"sender_addresses"] isKindOf:[NSArray class]]) {
-                BTCAddress* addr = [BTCAddress addressWithBase58String:[self ensure:string isKindOf:[NSString class]]];
+                BTCAddress* addr = [BTCAddress addressWithString:[self ensure:string isKindOf:[NSString class]]];
                 if (addr) {
                     [addrs addObject:addr];
                 } else {
@@ -58,7 +60,7 @@
         {
             NSMutableArray* addrs = [NSMutableArray array];
             for (NSString* string in [self ensure:dictionary[@"receiver_addresses"] isKindOf:[NSArray class]]) {
-                BTCAddress* addr = [BTCAddress addressWithBase58String:[self ensure:string isKindOf:[NSString class]]];
+                BTCAddress* addr = [BTCAddress addressWithString:[self ensure:string isKindOf:[NSString class]]];
                 if (addr) {
                     [addrs addObject:addr];
                 } else {

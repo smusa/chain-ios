@@ -30,6 +30,9 @@
 // The confirmed amount in satoshis that the address has ever sent.
 @property(nonatomic, readonly) BTCAmount confirmedSent;
 
+// Dictionary representation of the address info.
+@property(nonatomic, readonly) NSDictionary* dictionary;
+
 - (id) initWithDictionary:(NSDictionary*) dictionary;
 
 @end

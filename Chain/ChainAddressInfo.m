@@ -14,6 +14,7 @@
 @property(nonatomic, readwrite) BTCAmount confirmedBalance;
 @property(nonatomic, readwrite) BTCAmount confirmedReceived;
 @property(nonatomic, readwrite) BTCAmount confirmedSent;
+@property(nonatomic, readwrite) NSDictionary* dictionary;
 @end
 
 @implementation ChainAddressInfo
@@ -22,7 +23,8 @@
 {
     if (self = [super init])
     {
-        self.address = [BTCAddress addressWithBase58String:dictionary[@"address"]];
+        self.dictionary = dictionary;
+        self.address           = [BTCAddress addressWithString:dictionary[@"address"]];
         self.totalBalance      = [[dictionary[@"total"] objectForKey:@"balance"] longLongValue];
         self.totalReceived     = [[dictionary[@"total"] objectForKey:@"received"] longLongValue];
         self.totalSent         = [[dictionary[@"total"] objectForKey:@"sent"] longLongValue];
@@ -35,7 +37,7 @@
 
 - (NSString*) description
 {
-    return [NSString stringWithFormat:@"<ChainAddressInfo:%@ total:%@ confirmed:%@>", self.address.base58String, @(self.totalBalance), @(self.confirmedBalance)];
+    return [NSString stringWithFormat:@"<ChainAddressInfo:%@ total:%@ confirmed:%@>", self.address.string, @(self.totalBalance), @(self.confirmedBalance)];
 }
 
 

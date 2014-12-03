@@ -47,8 +47,8 @@ class AddressInfoTests : BaseTests {
             XCTAssert(addressInfos != nil, "Should receive some infos for the addresses")
             for info in addressInfos as [ChainAddressInfo] {
                 XCTAssert(
-                    info.address.base58String() == "17x23dNjXJLzGMev6R63uyRhMWP1VHawKc" ||
-                    info.address.base58String() == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"
+                    info.address.string == "17x23dNjXJLzGMev6R63uyRhMWP1VHawKc" ||
+                    info.address.string == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"
                 )
                 XCTAssert(info.totalReceived > 0)
                 XCTAssert(info.confirmedReceived > 0)

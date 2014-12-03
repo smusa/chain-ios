@@ -46,14 +46,14 @@
                     continue;
                 }
 
-                NSData* hash = BTCDataWithHexString(sig[@"hash_to_sign"]);
+                NSData* hash = BTCDataFromHex(sig[@"hash_to_sign"]);
 
                 NSAssert(hash.length == 32, @"hash_to_sign must be a valid hex-encoded 256-bit hash");
 
                 NSData* ecdsaSig = [key signatureForHash:hash];
 
-                sig[@"public_key"] = BTCHexStringFromData(key.publicKey);
-                sig[@"signature"] = BTCHexStringFromData(ecdsaSig);
+                sig[@"public_key"] = BTCHexFromData(key.publicKey);
+                sig[@"signature"] = BTCHexFromData(ecdsaSig);
 
                 [signedSigSlots addObject:sig];
             }
@@ -118,7 +118,7 @@
     // If it's not WIF, it must be hex-encoded private key.
     // We cannot know if public key must be compressed or not, so we'll return
     // both keys: with compressed and uncompressed pubkeys.
-    NSData* privkey = BTCDataWithHexString(k);
+    NSData* privkey = BTCDataFromHex(k);
 
     NSParameterAssert(privkey);
 

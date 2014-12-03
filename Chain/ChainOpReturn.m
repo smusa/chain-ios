@@ -33,7 +33,7 @@
             return nil;
         }
 
-        self.data = BTCDataWithHexString([self ensure:dictionary[@"hex"] isKindOf:[NSString class]]);
+        self.data = BTCDataFromHex([self ensure:dictionary[@"hex"] isKindOf:[NSString class]]);
 
         if (!self.data) {
             ChainError(@"OP_RETURN dictionary contains invalid or missing hex data.");

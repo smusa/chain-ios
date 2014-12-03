@@ -406,7 +406,7 @@ static Chain *sharedInstance = nil;
     }
 
     if ([tx isKindOfClass:[NSData class]]) {
-        tx = BTCHexStringFromData(tx);
+        tx = BTCHexFromData(tx);
     }
 
     if ([tx isKindOfClass:[NSString class]]) {
@@ -424,7 +424,7 @@ static Chain *sharedInstance = nil;
             return;
         }
         NSData* txhash = BTCHashFromID(dictionary[@"transaction_hash"]);
-        NSData* txdata = BTCDataWithHexString(dictionary[@"transaction_hex"]);
+        NSData* txdata = BTCDataFromHex(dictionary[@"transaction_hex"]);
 
         NSAssert(txhash, @"Tx hash must be returned");
         NSAssert(txdata, @"Raw tx data in hex must be returned");
@@ -772,7 +772,7 @@ static Chain *sharedInstance = nil;
 
     if (!scriptSig && coinbaseHex)
     {
-        txin.coinbaseData = BTCDataWithHexString(coinbaseHex);
+        txin.coinbaseData = BTCDataFromHex(coinbaseHex);
     }
     else
     {
@@ -794,7 +794,7 @@ static Chain *sharedInstance = nil;
 - (BTCTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict {
     BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
     txout.value = [outputDict[@"value"] longLongValue];
-    txout.script = [[BTCScript alloc] initWithData:BTCDataWithHexString(outputDict[@"script_hex"])];
+    txout.script = [[BTCScript alloc] initWithData:BTCDataFromHex(outputDict[@"script_hex"])];
     txout.userInfo = @{
                        @"addresses": [self addressesForAddressStrings:outputDict[@"addresses"]],
                        };
@@ -881,7 +881,7 @@ static Chain *sharedInstance = nil;
     ISO8601DateFormatter* dateFormatter = [[ISO8601DateFormatter alloc] init];
     bh.time = (uint32_t)round([[dateFormatter dateFromString:dict[@"time"]] timeIntervalSince1970]);
     bh.nonce = [dict[@"nonce"] unsignedIntValue];
-    NSData* bitsDataLE = BTCReversedData(BTCDataWithHexString(dict[@"bits"]));
+    NSData* bitsDataLE = BTCReversedData(BTCDataFromHex(dict[@"bits"]));
     if (bitsDataLE.length < 4) {
         NSMutableData* d2 = [bitsDataLE mutableCopy];
         d2.length = 4; // setter zero-fills extra bytes.

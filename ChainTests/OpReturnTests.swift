@@ -33,7 +33,7 @@ class OpReturnTests : BaseTests {
             XCTAssertEqual(opreturn.transactionID, "4a7d62a4a5cc912605c46c6a6ef6c4af451255a453e6cbf2b1022766c331f803")
             XCTAssertEqual(opreturn.transactionHash, BTCHashFromID("4a7d62a4a5cc912605c46c6a6ef6c4af451255a453e6cbf2b1022766c331f803"))
             XCTAssertEqual(opreturn.text, "Chain.com - The Block Chain API")
-            XCTAssertEqual(opreturn.data, BTCDataWithUTF8String("Chain.com - The Block Chain API"))
+            XCTAssertEqual(opreturn.data, BTCDataWithUTF8CString("Chain.com - The Block Chain API"))
 
             XCTAssert(opreturn.receiverAddresses as [BTCAddress] == [BTCAddress(string: "1Bj5UVzWQ84iBCUiy5eQ1NEfWfJ4a3yKG1")])
             XCTAssert(opreturn.senderAddresses as [BTCAddress]   == [BTCAddress(string: "1Bj5UVzWQ84iBCUiy5eQ1NEfWfJ4a3yKG1")])

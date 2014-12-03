@@ -20,10 +20,10 @@ class AddressUnspentsTests : BaseTests {
 
             for txout in outputs as [BTCTransactionOutput] {
 
-                XCTAssert(txout.script.standardAddress().base58String() == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG")
+                XCTAssert(txout.script.standardAddress.string == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG")
                 XCTAssert(txout.value > 0)
                 XCTAssert(txout.spent == false)
-                let addrs = (txout.userInfo["addresses"] as [BTCAddress]).map{ a in a.base58String() }
+                let addrs = (txout.userInfo["addresses"] as [BTCAddress]).map{ a in a.string }
                 XCTAssert(addrs.first == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG")
                 XCTAssert(addrs.count == 1)
                 XCTAssert(txout.confirmations > 0)

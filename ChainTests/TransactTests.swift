@@ -17,16 +17,16 @@ class TransactTests : BaseTests {
         key2 = BTCKey(WIF: "cTut2nqgnG4vvdphvZe3gN3zgQLoqdZ2iPKg8yuuDfXMGBobGjvD")
         key3 = BTCKey(WIF: "cUbwpPTPKwqA3LU215Zg8Ua9YFXBjHQLvYfgM7qpDa1LXpRCPAeG")
 
-        XCTAssertEqual(key1.addressTestnet.base58String(), "mrn4jgT5gGLZjK36CAGWZj917meq9Rk3Gv")
-        XCTAssertEqual(key2.addressTestnet.base58String(), "mzRf7M6cUzRWWPCUPNu5f9swpAaBZBKg8K")
-        XCTAssertEqual(key3.addressTestnet.base58String(), "mu4pn3U3frfjDCw1QsG8dxNh7qJTTJ7A3J")
+        XCTAssertEqual(key1.addressTestnet.string, "mrn4jgT5gGLZjK36CAGWZj917meq9Rk3Gv")
+        XCTAssertEqual(key2.addressTestnet.string, "mzRf7M6cUzRWWPCUPNu5f9swpAaBZBKg8K")
+        XCTAssertEqual(key3.addressTestnet.string, "mu4pn3U3frfjDCw1QsG8dxNh7qJTTJ7A3J")
     }
 
     func keyForAddress(address: BTCAddress) -> BTCKey? {
-        let addrString = address.base58String()
-        if key1.addressTestnet.base58String() == addrString { return key1 }
-        if key2.addressTestnet.base58String() == addrString { return key2 }
-        if key3.addressTestnet.base58String() == addrString { return key3 }
+        let addrString = address.string
+        if key1.addressTestnet.string == addrString { return key1 }
+        if key2.addressTestnet.string == addrString { return key2 }
+        if key3.addressTestnet.string == addrString { return key3 }
         return nil
     }
 
@@ -49,7 +49,7 @@ class TransactTests : BaseTests {
 
                 //NSLog("template: %@", dictionary)
 
-                let tx:BTCTransaction? = BTCTransaction(data:BTCDataWithHexString(dictionary["unsigned_hex"] as String));
+                let tx:BTCTransaction? = BTCTransaction(data:BTCDataFromHex(dictionary["unsigned_hex"] as String));
 
                 XCTAssert(tx != nil, "Should parse transaction correctly")
 
@@ -64,7 +64,7 @@ class TransactTests : BaseTests {
 
                     let sigTemplate = sigTemplates.first!
 
-                    let hashToSign = BTCDataWithHexString(sigTemplate["hash_to_sign"] as String)
+                    let hashToSign = BTCDataFromHex(sigTemplate["hash_to_sign"] as String)
                     XCTAssert(hashToSign.length == 32, "Should provide a hash to sign")
 
                     let addr = BTCAddress(base58String: sigTemplate["address"] as String)
@@ -154,9 +154,9 @@ class TransactTests : BaseTests {
         for input in signedTemplate!["inputs"] as [[String:AnyObject]] {
             for sigTemplate in input["signatures"] as [[String:String]] {
 
-                let hash = BTCDataWithHexString(sigTemplate["hash_to_sign"])
-                let pubkey = BTCDataWithHexString(sigTemplate["public_key"])
-                let sig = BTCDataWithHexString(sigTemplate["signature"])
+                let hash = BTCDataFromHex(sigTemplate["hash_to_sign"])
+                let pubkey = BTCDataFromHex(sigTemplate["public_key"])
+                let sig = BTCDataFromHex(sigTemplate["signature"])
 
                 XCTAssert(hash != nil, "Should have valid hex hash")
                 XCTAssert(pubkey != nil, "Should have valid hex pubkey")
@@ -179,9 +179,9 @@ class TransactTests : BaseTests {
 
         self.client.transact([
             "inputs": [
-                ["private_key": key1.WIF, "address": key1.addressTestnet.base58String()],
-                ["private_key": key2.WIF, "address": key2.addressTestnet.base58String()],
-                ["private_key": key3.WIF, "address": key3.addressTestnet.base58String()],
+                ["private_key": key1.WIF, "address": key1.addressTestnet.string],
+                ["private_key": key2.WIF, "address": key2.addressTestnet.string],
+                ["private_key": key3.WIF, "address": key3.addressTestnet.string],
             ],
             "outputs": [
                 [ "address": "mrn4jgT5gGLZjK36CAGWZj917meq9Rk3Gv", "amount": 2350000 ],

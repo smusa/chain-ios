@@ -171,20 +171,18 @@ static Chain *sharedInstance = nil;
                 // Lets fetch it with getTransaction API.
                 // Note: these calls will run in parallel, but will finish on main thread (in random order).
 
-                // Remember position using a placeholder transaction.
-                [results addObject:[[BTCTransaction alloc] init]];
+                // Remember position using a placeholder object.
+                [results addObject:[NSNull null]];
                 NSUInteger txindex = results.count - 1;
 
                 loadingTxsCount++;
                 NSLog(@"Chain: transaction is truncated, loading full data separately: %@ [#%@]", txdict[@"hash"], @(loadingTxsCount));
                 [self getTransaction:txdict[@"hash"] completionHandler:^(BTCTransaction *fullTx, NSError *error) {
 
-                    // If some other callback cancelled and returned, do nothing.
-                    if (loadingTxsCount == 0) return;
+                    if (loadingTxsCount == 0) return; // all calls were cancelled.
 
                     loadingTxsCount--;
 
-                    // If we fail to fetch a single tx, return immediately.
                     if (!fullTx) {
                         loadingTxsCount = 0;
                         completionHandler(nil, error);
@@ -610,7 +608,7 @@ static Chain *sharedInstance = nil;
 
         requestsCount++;
         [self getTransaction:txid completionHandler:^(BTCTransaction *transaction, NSError *error) {
-            if (requestsCount == 0) return; // was cancelled.
+            if (requestsCount == 0) return; // all calls were cancelled.
 
             if (!transaction) {
                 requestsCount = 0; // cancel and fail.

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = "Chain"
-  s.version  = "2.1.1"
+  s.version  = "2.1.2"
   s.summary  = "The Official iOS SDK for Chain's Bitcoin API"
   s.homepage = "https://chain.com"
   s.license  = 'MIT'
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.osx.frameworks     = %w{Foundation Security CoreServices}
   s.libraries          = "icucore"
 
-  s.dependency 'CoreBitcoin', ">=0.5"
+  s.dependency 'CoreBitcoin', "~>0.5.0"
 
   s.ios.deployment_target = '7.0'
   s.osx.deployment_target = '10.9'

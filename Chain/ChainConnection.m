@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, ChainRequestMethod) {
 
 @interface ChainConnection () <NSURLSessionDelegate>
 @property(nonatomic) NSURLSession* session;
-@property(nonatomic) NSArray* anchors;
+@property(nonatomic, readwrite) NSArray* anchorCertificates;
 @end
 
 @implementation ChainConnection
@@ -34,13 +34,18 @@ typedef NS_ENUM(NSUInteger, ChainRequestMethod) {
         // In Test target mainBundle does not correspond to the bundle where certificate is stored.
         // To access it we need to ask for a bundle from which this class was loaded.
         // Cf. http://stackoverflow.com/questions/16310660/how-to-add-open-a-bundle-file-in-a-test-target
-        NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"ChainCertificate" ofType:@"der"];
-        NSData *certificateData = [NSData dataWithContentsOfFile:path];
-        if (!certificateData) {
-            [NSException raise:@"ChainException" format:@"can't find ChainCertificate.der to verify HTTPS connection"];
+
+        NSMutableArray* anchors = [NSMutableArray array];
+        for (NSString* filename in @[@"ChainCertificate", @"ChainWSSCertificate"]) {
+            NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:filename ofType:@"der"];
+            NSData *certificateData = [NSData dataWithContentsOfFile:path];
+            if (!certificateData) {
+                [NSException raise:@"ChainException" format:@"can't find %@.der to verify SSL connection", filename];
+            }
+            SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData);
+            [anchors addObject:CFBridgingRelease(certificate)];
         }
-        SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData);
-        self.anchors = @[CFBridgingRelease(certificate)];
+        self.anchorCertificates = anchors;
     }
     return self;
 }
@@ -202,7 +207,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler {
     SecTrustRef trust = challenge.protectionSpace.serverTrust;
 
-    SecTrustSetAnchorCertificates(trust, (__bridge CFArrayRef)self.anchors);
+    SecTrustSetAnchorCertificates(trust, (__bridge CFArrayRef)self.anchorCertificates);
     SecTrustSetAnchorCertificatesOnly(trust, true);
 
     SecTrustResultType result;

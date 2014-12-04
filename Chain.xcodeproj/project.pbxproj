@@ -163,16 +163,18 @@
 		20C4ED6D1A1CF5B4000E42C0 /* libssl-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20751A841A1B9C2400155228 /* libssl-osx.a */; };
 		20C4ED6F1A1CF6BC000E42C0 /* BaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20215E721A1CC8EA0031A271 /* BaseTests.swift */; };
 		20C4ED721A1CF751000E42C0 /* BaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20215E721A1CC8EA0031A271 /* BaseTests.swift */; };
+		20D699B81A27678300DD1F75 /* ChainSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D699B61A27678300DD1F75 /* ChainSRWebSocket.h */; };
+		20D699B91A27678300DD1F75 /* ChainSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D699B61A27678300DD1F75 /* ChainSRWebSocket.h */; };
+		20D699BA1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699B71A27678300DD1F75 /* ChainSRWebSocket.m */; };
+		20D699BB1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699B71A27678300DD1F75 /* ChainSRWebSocket.m */; };
+		20D699BD1A276B8F00DD1F75 /* ChainWSSCertificate.der in Resources */ = {isa = PBXBuildFile; fileRef = 20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */; };
+		20D699BE1A276B8F00DD1F75 /* ChainWSSCertificate.der in Resources */ = {isa = PBXBuildFile; fileRef = 20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */; };
 		20E9BD2F1A1F82C000719259 /* TransactTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD2E1A1F82C000719259 /* TransactTests.swift */; };
 		20E9BD301A1F82C000719259 /* TransactTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD2E1A1F82C000719259 /* TransactTests.swift */; };
 		20E9BD331A1F831500719259 /* ChainSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E9BD311A1F831500719259 /* ChainSigner.h */; };
 		20E9BD341A1F831500719259 /* ChainSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E9BD311A1F831500719259 /* ChainSigner.h */; };
 		20E9BD351A1F831500719259 /* ChainSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD321A1F831500719259 /* ChainSigner.m */; };
 		20E9BD361A1F831500719259 /* ChainSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD321A1F831500719259 /* ChainSigner.m */; };
-		20E9BD3D1A1F854200719259 /* SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E9BD391A1F854200719259 /* SRWebSocket.h */; };
-		20E9BD3E1A1F854200719259 /* SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E9BD391A1F854200719259 /* SRWebSocket.h */; };
-		20E9BD3F1A1F854200719259 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD3A1A1F854200719259 /* SRWebSocket.m */; };
-		20E9BD401A1F854200719259 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD3A1A1F854200719259 /* SRWebSocket.m */; };
 		20E9BD471A1F85B300719259 /* ChainNotification.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E9BD411A1F85B300719259 /* ChainNotification.h */; };
 		20E9BD481A1F85B300719259 /* ChainNotification.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E9BD411A1F85B300719259 /* ChainNotification.h */; };
 		20E9BD491A1F85B300719259 /* ChainNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD421A1F85B300719259 /* ChainNotification.m */; };
@@ -376,11 +378,12 @@
 		20C4ECBF1A1CF416000E42C0 /* Chain-OSX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Chain-OSX.h"; sourceTree = "<group>"; };
 		20C4ECC51A1CF416000E42C0 /* Chain_OSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Chain_OSXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		20C4ECCB1A1CF417000E42C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		20D699B61A27678300DD1F75 /* ChainSRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainSRWebSocket.h; sourceTree = "<group>"; };
+		20D699B71A27678300DD1F75 /* ChainSRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainSRWebSocket.m; sourceTree = "<group>"; };
+		20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = ChainWSSCertificate.der; sourceTree = "<group>"; };
 		20E9BD2E1A1F82C000719259 /* TransactTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactTests.swift; sourceTree = "<group>"; };
 		20E9BD311A1F831500719259 /* ChainSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainSigner.h; sourceTree = "<group>"; };
 		20E9BD321A1F831500719259 /* ChainSigner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainSigner.m; sourceTree = "<group>"; };
-		20E9BD391A1F854200719259 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
-		20E9BD3A1A1F854200719259 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
 		20E9BD411A1F85B300719259 /* ChainNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainNotification.h; sourceTree = "<group>"; };
 		20E9BD421A1F85B300719259 /* ChainNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainNotification.m; sourceTree = "<group>"; };
 		20E9BD431A1F85B300719259 /* ChainNotificationResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainNotificationResult.h; sourceTree = "<group>"; };
@@ -438,7 +441,6 @@
 				207519971A1B95E500155228 /* LICENSE */,
 				207516A21A1B57D000155228 /* Chain */,
 				207516951A1B55F200155228 /* Tests */,
-				20E9BD371A1F854200719259 /* SocketRocket */,
 				2075199D1A1B9B0000155228 /* CoreBitcoin */,
 				20751A321A1B9C2400155228 /* openssl */,
 				20C4EC9E1A1CF3D8000E42C0 /* Chain-iOS */,
@@ -479,6 +481,7 @@
 			isa = PBXGroup;
 			children = (
 				207516A31A1B57D000155228 /* ChainCertificate.der */,
+				20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */,
 				207516A41A1B57D000155228 /* Chain.h */,
 				207516A51A1B57D000155228 /* Chain.m */,
 				20E9BD311A1F831500719259 /* ChainSigner.h */,
@@ -491,6 +494,8 @@
 				20E9BD441A1F85B300719259 /* ChainNotificationResult.m */,
 				20E9BD451A1F85B300719259 /* ChainNotificationObserver.h */,
 				20E9BD461A1F85B300719259 /* ChainNotificationObserver.m */,
+				20D699B61A27678300DD1F75 /* ChainSRWebSocket.h */,
+				20D699B71A27678300DD1F75 /* ChainSRWebSocket.m */,
 			);
 			path = Chain;
 			sourceTree = "<group>";
@@ -731,16 +736,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		20E9BD371A1F854200719259 /* SocketRocket */ = {
-			isa = PBXGroup;
-			children = (
-				20E9BD391A1F854200719259 /* SRWebSocket.h */,
-				20E9BD3A1A1F854200719259 /* SRWebSocket.m */,
-			);
-			name = SocketRocket;
-			path = SocketRocket/SocketRocket;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -756,12 +751,12 @@
 				20E9BD4F1A1F85B300719259 /* ChainNotificationObserver.h in Headers */,
 				20C4ECD51A1CF456000E42C0 /* Chain.h in Headers */,
 				20C4ED0C1A1CF5A1000E42C0 /* BTCMnemonic.h in Headers */,
-				20E9BD3D1A1F854200719259 /* SRWebSocket.h in Headers */,
 				20C4ED001A1CF5A1000E42C0 /* BTCCurvePoint.h in Headers */,
 				20C4ECF41A1CF5A1000E42C0 /* BTCBlindSignature.h in Headers */,
 				20C4ED121A1CF5A1000E42C0 /* BTCOpcode.h in Headers */,
 				20C4ECFE1A1CF5A1000E42C0 /* BTCCurrencyConverter.h in Headers */,
 				20C4ECEC1A1CF5A1000E42C0 /* BTCAddress.h in Headers */,
+				20D699B81A27678300DD1F75 /* ChainSRWebSocket.h in Headers */,
 				20E9BD331A1F831500719259 /* ChainSigner.h in Headers */,
 				20E9BD4B1A1F85B300719259 /* ChainNotificationResult.h in Headers */,
 				20C4ECF01A1CF5A1000E42C0 /* BTCBigNumber.h in Headers */,
@@ -805,12 +800,12 @@
 				20E9BD501A1F85B300719259 /* ChainNotificationObserver.h in Headers */,
 				20C4ECDC1A1CF458000E42C0 /* Chain.h in Headers */,
 				20C4ED4D1A1CF5A2000E42C0 /* BTCMnemonic.h in Headers */,
-				20E9BD3E1A1F854200719259 /* SRWebSocket.h in Headers */,
 				20C4ED411A1CF5A2000E42C0 /* BTCCurvePoint.h in Headers */,
 				20C4ED351A1CF5A2000E42C0 /* BTCBlindSignature.h in Headers */,
 				20C4ED531A1CF5A2000E42C0 /* BTCOpcode.h in Headers */,
 				20C4ED3F1A1CF5A2000E42C0 /* BTCCurrencyConverter.h in Headers */,
 				20C4ED2D1A1CF5A2000E42C0 /* BTCAddress.h in Headers */,
+				20D699B91A27678300DD1F75 /* ChainSRWebSocket.h in Headers */,
 				20E9BD341A1F831500719259 /* ChainSigner.h in Headers */,
 				20E9BD4C1A1F85B300719259 /* ChainNotificationResult.h in Headers */,
 				20C4ED311A1CF5A2000E42C0 /* BTCBigNumber.h in Headers */,
@@ -967,6 +962,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20C4ECD41A1CF456000E42C0 /* ChainCertificate.der in Resources */,
+				20D699BD1A276B8F00DD1F75 /* ChainWSSCertificate.der in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -982,6 +978,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20C4ECDB1A1CF458000E42C0 /* ChainCertificate.der in Resources */,
+				20D699BE1A276B8F00DD1F75 /* ChainWSSCertificate.der in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1027,13 +1024,13 @@
 				20C4ECFB1A1CF5A1000E42C0 /* BTCBlockHeader.m in Sources */,
 				20C4ECF51A1CF5A1000E42C0 /* BTCBlindSignature.m in Sources */,
 				20C4ED241A1CF5A1000E42C0 /* BTCTransactionBuilder.m in Sources */,
+				20D699BA1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */,
 				20C4ED011A1CF5A1000E42C0 /* BTCCurvePoint.m in Sources */,
 				20C4ECFD1A1CF5A1000E42C0 /* BTCChainCom.m in Sources */,
 				20C4ECFF1A1CF5A1000E42C0 /* BTCCurrencyConverter.m in Sources */,
 				20C4ECEF1A1CF5A1000E42C0 /* BTCBase58.m in Sources */,
 				20C4ED0B1A1CF5A1000E42C0 /* BTCKeychain.m in Sources */,
 				20C4ED091A1CF5A1000E42C0 /* BTCKey.m in Sources */,
-				20E9BD3F1A1F854200719259 /* SRWebSocket.m in Sources */,
 				20C4ED261A1CF5A1000E42C0 /* BTCTransactionInput.m in Sources */,
 				20E9BD4D1A1F85B300719259 /* ChainNotificationResult.m in Sources */,
 				20C4ECF91A1CF5A1000E42C0 /* BTCBlockchainInfo.m in Sources */,
@@ -1084,13 +1081,13 @@
 				20C4ED3C1A1CF5A2000E42C0 /* BTCBlockHeader.m in Sources */,
 				20C4ED361A1CF5A2000E42C0 /* BTCBlindSignature.m in Sources */,
 				20C4ED651A1CF5A2000E42C0 /* BTCTransactionBuilder.m in Sources */,
+				20D699BB1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */,
 				20C4ED421A1CF5A2000E42C0 /* BTCCurvePoint.m in Sources */,
 				20C4ED3E1A1CF5A2000E42C0 /* BTCChainCom.m in Sources */,
 				20C4ED401A1CF5A2000E42C0 /* BTCCurrencyConverter.m in Sources */,
 				20C4ED301A1CF5A2000E42C0 /* BTCBase58.m in Sources */,
 				20C4ED4C1A1CF5A2000E42C0 /* BTCKeychain.m in Sources */,
 				20C4ED4A1A1CF5A2000E42C0 /* BTCKey.m in Sources */,
-				20E9BD401A1F854200719259 /* SRWebSocket.m in Sources */,
 				20C4ED671A1CF5A2000E42C0 /* BTCTransactionInput.m in Sources */,
 				20E9BD4E1A1F85B300719259 /* ChainNotificationResult.m in Sources */,
 				20C4ED3A1A1CF5A2000E42C0 /* BTCBlockchainInfo.m in Sources */,

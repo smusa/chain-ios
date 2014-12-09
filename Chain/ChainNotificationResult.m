@@ -4,34 +4,45 @@
 //  Copyright (c) 2014 Chain Inc. All rights reserved.
 //
 
+#import "ChainHelpers.h"
 #import "ChainNotification.h"
 #import "ChainNotificationResult.h"
-
 
 // Internal read-write properties.
 
 @interface ChainNotificationResult ()
-@property(nonatomic, readwrite) NSString* type;
 @property(nonatomic, readwrite) NSInteger droppedCount;
 @property(nonatomic, readwrite) NSDictionary* payloadDictionary;
 @property(nonatomic, readwrite) NSString* blockchain;
 @end
 
+
+
+@interface ChainNotificationAddress ()
+@property(nonatomic, readwrite) BTCAddress* address;
+@property(nonatomic, readwrite) BTCAmount sentAmount;
+@property(nonatomic, readwrite) BTCAmount receivedAmount;
+@property(nonatomic, readwrite) NSString* transactionHash;
+@property(nonatomic, readwrite) NSArray* inputAddresses;
+@property(nonatomic, readwrite) NSArray* outputAddresses;
+@property(nonatomic, readwrite) NSString* blockHash;
+@property(nonatomic, readwrite) NSUInteger confirmations;
+@end
+
 @interface ChainNotificationNewTransaction ()
+@property(nonatomic, readwrite) BTCTransaction* transaction;
 @property(nonatomic, readwrite) NSDictionary* transactionDictionary;
 @end
 
 @interface ChainNotificationNewBlock ()
+@property(nonatomic, readwrite) BTCBlockHeader* blockHeader;
 @property(nonatomic, readwrite) NSDictionary* blockDictionary;
 @end
 
 @interface ChainNotificationTransaction ()
+@property(nonatomic, readwrite) BTCTransaction* transaction;
 @property(nonatomic, readwrite) NSDictionary* transactionDictionary;
 @end
-
-@interface ChainNotificationAddress ()
-@end
-
 
 
 
@@ -41,75 +52,108 @@
 + (instancetype) notificationResultWithDictionary:(NSDictionary*)dict
 {
     NSDictionary* payload = dict[@"payload"];
-
-    ChainNotificationResult* result = nil;
-    if ([payload[@"type"] isEqualToString:ChainNotificationTypeNewTransaction])
+    NSString* type = payload[@"type"];
+    if ([type isEqualToString:ChainNotificationTypeNewTransaction])
     {
-        ChainNotificationNewTransaction* newTxResult = [[ChainNotificationNewTransaction alloc] init];
-        newTxResult.type = ChainNotificationTypeNewTransaction;
-
-        // TODO: parse and set the BTCTransaction
-        newTxResult.transactionDictionary = payload[@"transaction"];
-
-        result = newTxResult;
+        return [[ChainNotificationNewTransaction alloc] initWithDictionary:dict];
     }
-    else if ([payload[@"type"] isEqualToString:ChainNotificationTypeNewBlock])
+    else if ([type isEqualToString:ChainNotificationTypeNewBlock])
     {
-        ChainNotificationNewBlock* newBlockResult = [[ChainNotificationNewBlock alloc] init];
-        newBlockResult.type = ChainNotificationTypeNewBlock;
-
-        // TODO: parse and set the BTCBlock
-        newBlockResult.blockDictionary = payload[@"block"];
-
-        result = newBlockResult;
+        return [[ChainNotificationNewBlock alloc] initWithDictionary:dict];
     }
-    else if ([payload[@"type"] isEqualToString:ChainNotificationTypeTransaction])
+    else if ([type isEqualToString:ChainNotificationTypeTransaction])
     {
-        ChainNotificationTransaction* txResult = [[ChainNotificationTransaction alloc] init];
-        txResult.type = ChainNotificationTypeTransaction;
-
-        // TODO: parse and set the BTCTransaction
-        txResult.transactionDictionary = payload[@"transaction"];
-
-        result = txResult;
+        return [[ChainNotificationTransaction alloc] initWithDictionary:dict];
     }
-    else if ([payload[@"type"] isEqualToString:ChainNotificationTypeAddress])
+    else if ([type isEqualToString:ChainNotificationTypeAddress])
     {
-        ChainNotificationAddress* addrResult = [[ChainNotificationAddress alloc] init];
-        addrResult.type = ChainNotificationTypeAddress;
-
-        // All info will be in payloadDictionary, see below.
-
-        result = addrResult;
+        return [[ChainNotificationAddress alloc] initWithDictionary:dict];
     }
-    else if ([payload[@"type"] isEqualToString:ChainNotificationTypeHeartbeat])
+    else if ([type isEqualToString:ChainNotificationTypeHeartbeat])
     {
         // Ignore heartbeat messages.
         return nil;
     }
     else
     {
-        NSLog(@"ChainNotificationResult: UNKNOWN TYPE RECEIVED: %@ Dictionary: %@", payload[@"type"], dict);
+        NSLog(@"ChainNotificationResult: UNKNOWN TYPE RECEIVED: %@ Dictionary: %@", type, dict);
         return nil;
     }
+    return nil;
+}
 
-    result.payloadDictionary = payload;
-    result.droppedCount = [dict[@"dropped"] integerValue];
-    result.blockchain = payload[@"block_chain"];
-    return result;
+// Internal initializer
+- (id) initWithDictionary:(NSDictionary*)dict {
+    if (self = [super init]) {
+        NSDictionary* payload = dict[@"payload"];
+        self.payloadDictionary = payload;
+        self.droppedCount = [dict[@"dropped"] integerValue];
+        self.blockchain = payload[@"block_chain"];
+    }
+    return self;
 }
 
 @end
 
 
-@implementation ChainNotificationNewTransaction
+@implementation ChainNotificationAddress
+- (id) initWithDictionary:(NSDictionary*)dict {
+    if (self = [super initWithDictionary:dict]) {
+        NSDictionary* payload = dict[@"payload"];
+        self.address = [BTCAddress addressWithString:payload[@"address"]];
+        self.sentAmount = [payload[@"sent"] longLongValue];
+        self.receivedAmount = [payload[@"received"] longLongValue];
+        self.inputAddresses = [ChainHelpers addressesForAddressStrings:payload[@"input_addresses"]];
+        self.outputAddresses = [ChainHelpers addressesForAddressStrings:payload[@"output_addresses"]];
+        self.transactionHash = [ChainHelpers filterNSNull:payload[@"transaction_hash"]];
+        self.blockHash = [ChainHelpers filterNSNull:payload[@"block_hash"]];
+        self.confirmations = [[ChainHelpers filterNSNull:payload[@"confirmations"]] unsignedIntegerValue];
+    }
+    return self;
+}
+- (NSString*) type {
+    return ChainNotificationTypeAddress;
+}
 @end
 
-@implementation ChainNotificationNewBlock
-@end
 
 @implementation ChainNotificationTransaction
+- (id) initWithDictionary:(NSDictionary*)dict {
+    if (self = [super initWithDictionary:dict]) {
+        self.transactionDictionary = dict[@"payload"][@"transaction"];
+        self.transaction = [ChainHelpers transactionWithDictionary:self.transactionDictionary allowTruncated:NO];
+    }
+    return self;
+}
+- (NSString*) type {
+    return ChainNotificationTypeTransaction;
+}
 @end
 
-@implementation ChainNotificationAddress
+
+@implementation ChainNotificationNewTransaction
+- (id) initWithDictionary:(NSDictionary*)dict {
+    if (self = [super initWithDictionary:dict]) {
+        self.transactionDictionary = dict[@"payload"][@"transaction"];
+        self.transaction = [ChainHelpers transactionWithDictionary:self.transactionDictionary allowTruncated:NO];
+    }
+    return self;
+}
+- (NSString*) type {
+    return ChainNotificationTypeNewTransaction;
+}
+@end
+
+
+@implementation ChainNotificationNewBlock
+- (id) initWithDictionary:(NSDictionary*)dict {
+    if (self = [super initWithDictionary:dict]) {
+        self.blockDictionary = dict[@"payload"][@"block"];
+        self.blockHeader = [ChainHelpers blockHeaderWithDictionary:self.blockDictionary error:NULL];
+    }
+    return self;
+}
+- (NSString*) type {
+    return ChainNotificationTypeNewBlock;
+}
 @end

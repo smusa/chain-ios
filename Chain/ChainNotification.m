@@ -43,9 +43,19 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
 }
 
 // Instantiates a notification with type "address" watching for a given address.
-- (id) initWithAddress:(NSString*)address
+- (id) initWithAddress:(id)address
 {
     NSParameterAssert(address);
+
+    if ([address isKindOfClass:[NSString class]]) {
+        address = [BTCAddress addressWithString:address];
+        if (!address) return nil;
+    }
+
+    if (![address isKindOfClass:[BTCAddress class]]) {
+        [NSException raise:@"ChainException" format:@"Invalid address class (%@), expected NSString or BTCAddress.", [address class]];
+    }
+
     if (self = [self initWithType:ChainNotificationTypeAddress])
     {
         self.address = address;
@@ -61,7 +71,7 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
     dict[@"type"] = self.type;
     dict[@"block_chain"] = self.blockchain ?: ChainBlockchainMainnet;
     if (self.transactionHash) dict[@"transaction_hash"] = self.transactionHash;
-    if (self.address) dict[@"address"] = self.address;
+    if (self.address) dict[@"address"] = self.address.string;
 
     return dict;
 }

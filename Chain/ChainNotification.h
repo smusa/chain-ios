@@ -12,6 +12,7 @@ extern NSString* const ChainNotificationTypeNewTransaction;
 extern NSString* const ChainNotificationTypeNewBlock;
 extern NSString* const ChainNotificationTypeHeartbeat; // can be received from time to time
 
+@class BTCAddress;
 @interface ChainNotification : NSObject
 
 // One of ChainNotificationType{Address,Transaction,NewTransaction,NewBlock}
@@ -24,7 +25,7 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 @property(nonatomic) NSString* transactionHash;
 
 // Only for ChainNotificationTypeAddress.
-@property(nonatomic) NSString* address;
+@property(nonatomic) BTCAddress* address;
 
 // Instantiates a notification with a given type.
 - (id) initWithType:(NSString*)type;
@@ -34,7 +35,8 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 - (id) initWithTransactionHash:(NSString*)txhash;
 
 // Instantiates a notification with type "address" watching for a given address.
-- (id) initWithAddress:(NSString*)address;
+// Address could be NSString or BTCAddress.
+- (id) initWithAddress:(id)address;
 
 // Dictionary representation suitable for network requests.
 - (NSDictionary*) dictionary;

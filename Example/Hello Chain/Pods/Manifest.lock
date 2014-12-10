@@ -1,0 +1,20 @@
+PODS:
+  - Chain (2.2.0pre2):
+    - CoreBitcoin (>= 0.5)
+  - CoreBitcoin (0.5.3):
+    - OpenSSL-Universal (= 1.0.1.h)
+  - OpenSSL-Universal (1.0.1.h)
+
+DEPENDENCIES:
+  - Chain (from `../../`)
+
+EXTERNAL SOURCES:
+  Chain:
+    :path: ../../
+
+SPEC CHECKSUMS:
+  Chain: d72caa1f2ef469652a04f6dd5abb86f40b1334a9
+  CoreBitcoin: 959814821b345dffef2749a618dde36eb424d7f6
+  OpenSSL-Universal: 9c112508615ed33bb35f730eed820e93175a9dec
+
+COCOAPODS: 0.35.0

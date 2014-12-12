@@ -149,6 +149,8 @@
     if (outputDict[@"output_index"] && outputDict[@"output_index"] != [NSNull null]) {
         txout.index = [outputDict[@"output_index"] unsignedIntValue];
     }
+    txout.transactionID = [ChainHelpers filterNSNull:outputDict[@"transaction_hash"]];
+
     return txout;
 }
 

@@ -18,7 +18,8 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 // One of ChainNotificationType{Address,Transaction,NewTransaction,NewBlock}
 @property(nonatomic,readonly) NSString* type;
 
-// ChainBlockchainMainnet by default.
+// Blockchain to observe. Default is nil and the blockchain is determined by the one
+// configured on the Chain instance when creating an observer instance.
 @property(nonatomic) NSString* blockchain;
 
 // Only for ChainNotificationTypeTransaction.
@@ -38,7 +39,7 @@ extern NSString* const ChainNotificationTypeHeartbeat; // can be received from t
 // Address could be NSString or BTCAddress.
 - (id) initWithAddress:(id)address;
 
-// Dictionary representation suitable for network requests.
-- (NSDictionary*) dictionary;
+// Internal: dictionary representation.
+- (NSDictionary*) dictionaryWithDefaultBlockchain:(NSString*)blockchain;
 
 @end

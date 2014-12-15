@@ -25,7 +25,7 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
     if (self = [super init])
     {
         self.type = type;
-        self.blockchain = ChainBlockchainMainnet;
+        self.blockchain = nil;
     }
     return self;
 }
@@ -64,12 +64,13 @@ NSString* const ChainNotificationTypeHeartbeat = @"heartbeat"; // can be receive
 }
 
 
-- (NSDictionary*) dictionary
+// Internal: dictionary representation.
+- (NSDictionary*) dictionaryWithDefaultBlockchain:(NSString*)defaultBlockchain
 {
     NSMutableDictionary* dict = [NSMutableDictionary dictionary];
 
     dict[@"type"] = self.type;
-    dict[@"block_chain"] = self.blockchain ?: ChainBlockchainMainnet;
+    dict[@"block_chain"] = self.blockchain ?: defaultBlockchain;
     if (self.transactionHash) dict[@"transaction_hash"] = self.transactionHash;
     if (self.address) dict[@"address"] = self.address.string;
 

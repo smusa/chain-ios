@@ -130,7 +130,7 @@
 
     for (ChainNotification* notif in self.notifications)
     {
-        NSDictionary* dict = [notif dictionary];
+        NSDictionary* dict = [notif dictionaryWithDefaultBlockchain:self.connection.blockchain];
         NSError* jsonerror = nil;
         NSData* payload = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&jsonerror];
 

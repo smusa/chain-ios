@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreBitcoin/CoreBitcoin.h>
 
-#import "ChainAddressInfo.h"
+#import "ChainAddress.h"
 #import "ChainOpReturn.h"
 #import "ChainNotification.h"
 #import "ChainNotificationResult.h"
@@ -48,11 +48,11 @@ extern NSString* const ChainAPIVersion1;
 
 #pragma mark - Address
 
-// Returns ChainAddressInfo instance for a given address (NSString or BTCAddress type).
-- (void) getAddress:(id)address completionHandler:(void (^)(ChainAddressInfo *addressInfo, NSError *error))completionHandler;
+// Returns ChainAddress instance for a given address (NSString or BTCAddress type).
+- (void) getAddress:(id)address completionHandler:(void (^)(ChainAddress *chainAddress, NSError *error))completionHandler;
 
-// Returns an array of ChainAddressInfo instances for an array of addresses (NSString or BTCAddress types).
-- (void) getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSArray *addressInfos, NSError *error))completionHandler;
+// Returns an array of ChainAddress instances for an array of addresses (NSString or BTCAddress types).
+- (void) getAddresses:(NSArray *)addresses completionHandler:(void (^)(NSArray *chainAddresses, NSError *error))completionHandler;
 
 
 #pragma mark - Transactions By Address

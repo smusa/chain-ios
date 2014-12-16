@@ -80,7 +80,7 @@ static Chain *sharedInstance = nil;
 #pragma mark - Address
 
 
-- (void)getAddress:(id)address completionHandler:(void (^)(ChainAddressInfo *addressInfo, NSError *error))completionHandler {
+- (void)getAddress:(id)address completionHandler:(void (^)(ChainAddress *addressInfo, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert(address != nil);
     [self getAddresses:@[ address ] completionHandler:^(NSArray *addressInfos, NSError *error) {
@@ -109,7 +109,7 @@ static Chain *sharedInstance = nil;
         NSMutableArray* results = [NSMutableArray array];
 
         for (NSDictionary* dict in dictionary[@"results"] ?: @[dictionary]) {
-            ChainAddressInfo* addrInfo = [[ChainAddressInfo alloc] initWithDictionary:dict];
+            ChainAddress* addrInfo = [[ChainAddress alloc] initWithDictionary:dict];
             if (addrInfo) [results addObject:addrInfo];
         }
         completionHandler(results, nil);

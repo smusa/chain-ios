@@ -13,11 +13,11 @@ class AddressInfoTests : BaseTests {
 
     func testAddressInfoWithStringAddress() {
         self.shouldCompleteIn(2.0)
-        self.client.getAddress("17x23dNjXJLzGMev6R63uyRhMWP1VHawKc") { addressInfo, error in
-            XCTAssert(addressInfo != nil, "Should receive some info for an address")
-            XCTAssertEqual(addressInfo.address.string, "17x23dNjXJLzGMev6R63uyRhMWP1VHawKc")
-            XCTAssert(addressInfo.totalReceived > 0)
-            XCTAssert(addressInfo.confirmedReceived > 0)
+        self.client.getAddress("17x23dNjXJLzGMev6R63uyRhMWP1VHawKc") { chainAddress, error in
+            XCTAssert(chainAddress != nil, "Should receive some info for an address")
+            XCTAssertEqual(chainAddress.address.string, "17x23dNjXJLzGMev6R63uyRhMWP1VHawKc")
+            XCTAssert(chainAddress.totalReceived > 0)
+            XCTAssert(chainAddress.confirmedReceived > 0)
             self.completeAsyncTask()
         }
         self.waitForCompletion();
@@ -43,15 +43,15 @@ class AddressInfoTests : BaseTests {
             "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"
         ]
 
-        self.client.getAddresses(mixedAddresses) { addressInfos, error in
-            XCTAssert(addressInfos != nil, "Should receive some infos for the addresses")
-            for info in addressInfos as [ChainAddressInfo] {
+        self.client.getAddresses(mixedAddresses) { chainAddresses, error in
+            XCTAssert(chainAddresses != nil, "Should receive some details for the addresses")
+            for ca in chainAddresses as [ChainAddress] {
                 XCTAssert(
-                    info.address.string == "17x23dNjXJLzGMev6R63uyRhMWP1VHawKc" ||
-                    info.address.string == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"
+                    ca.address.string == "17x23dNjXJLzGMev6R63uyRhMWP1VHawKc" ||
+                    ca.address.string == "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"
                 )
-                XCTAssert(info.totalReceived > 0)
-                XCTAssert(info.confirmedReceived > 0)
+                XCTAssert(ca.totalReceived > 0)
+                XCTAssert(ca.confirmedReceived > 0)
             }
             self.completeAsyncTask()
         }

@@ -4,10 +4,11 @@
 //  Copyright (c) 2014 Chain Inc. All rights reserved.
 //
 
-#import "ChainAddressInfo.h"
+#import "ChainAddress.h"
 
-@interface ChainAddressInfo ()
+@interface ChainAddress ()
 @property(nonatomic, readwrite) BTCAddress* address;
+@property(nonatomic, readwrite) NSString* string;
 @property(nonatomic, readwrite) BTCAmount totalBalance;
 @property(nonatomic, readwrite) BTCAmount totalReceived;
 @property(nonatomic, readwrite) BTCAmount totalSent;
@@ -17,7 +18,7 @@
 @property(nonatomic, readwrite) NSDictionary* dictionary;
 @end
 
-@implementation ChainAddressInfo
+@implementation ChainAddress
 
 - (id) initWithDictionary:(NSDictionary*) dictionary
 {
@@ -25,6 +26,7 @@
     {
         self.dictionary = dictionary;
         self.address           = [BTCAddress addressWithString:dictionary[@"address"]];
+        self.string            = dictionary[@"address"];
         self.totalBalance      = [[dictionary[@"total"] objectForKey:@"balance"] longLongValue];
         self.totalReceived     = [[dictionary[@"total"] objectForKey:@"received"] longLongValue];
         self.totalSent         = [[dictionary[@"total"] objectForKey:@"sent"] longLongValue];
@@ -35,8 +37,7 @@
     return self;
 }
 
-- (NSString*) description
-{
+- (NSString*) description {
     return [NSString stringWithFormat:@"<ChainAddressInfo:%@ total:%@ confirmed:%@>", self.address.string, @(self.totalBalance), @(self.confirmedBalance)];
 }
 

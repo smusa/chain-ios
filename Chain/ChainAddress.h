@@ -7,10 +7,13 @@
 #import <Foundation/Foundation.h>
 #import <CoreBitcoin/CoreBitcoin.h>
 
-@interface ChainAddressInfo : NSObject
+@interface ChainAddress : NSObject
 
 // A concrete BTCAddress subclass instace described by the properties that follow.
 @property(nonatomic, readonly) BTCAddress* address;
+
+// A Base58 representation of the address.
+@property(nonatomic, readonly) NSString* string;
 
 // The total balance of the address in satoshis (total = confirmed + unconfirmed).
 @property(nonatomic, readonly) BTCAmount totalBalance;

@@ -191,10 +191,10 @@
 		20D699BB1A27678300DD1F75 /* ChainSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699B71A27678300DD1F75 /* ChainSRWebSocket.m */; };
 		20D699BD1A276B8F00DD1F75 /* ChainWSSCertificate.der in Resources */ = {isa = PBXBuildFile; fileRef = 20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */; };
 		20D699BE1A276B8F00DD1F75 /* ChainWSSCertificate.der in Resources */ = {isa = PBXBuildFile; fileRef = 20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */; };
-		20D699C11A277B1F00DD1F75 /* ChainAddressInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D699BF1A277B1F00DD1F75 /* ChainAddressInfo.h */; };
-		20D699C21A277B1F00DD1F75 /* ChainAddressInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D699BF1A277B1F00DD1F75 /* ChainAddressInfo.h */; };
-		20D699C31A277B1F00DD1F75 /* ChainAddressInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699C01A277B1F00DD1F75 /* ChainAddressInfo.m */; };
-		20D699C41A277B1F00DD1F75 /* ChainAddressInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699C01A277B1F00DD1F75 /* ChainAddressInfo.m */; };
+		20D699C11A277B1F00DD1F75 /* ChainAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D699BF1A277B1F00DD1F75 /* ChainAddress.h */; };
+		20D699C21A277B1F00DD1F75 /* ChainAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D699BF1A277B1F00DD1F75 /* ChainAddress.h */; };
+		20D699C31A277B1F00DD1F75 /* ChainAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699C01A277B1F00DD1F75 /* ChainAddress.m */; };
+		20D699C41A277B1F00DD1F75 /* ChainAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D699C01A277B1F00DD1F75 /* ChainAddress.m */; };
 		20D699C61A2784B400DD1F75 /* AddressInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D699C51A2784B400DD1F75 /* AddressInfoTests.swift */; };
 		20D699C71A2784B400DD1F75 /* AddressInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D699C51A2784B400DD1F75 /* AddressInfoTests.swift */; };
 		20E9BD2F1A1F82C000719259 /* TransactTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E9BD2E1A1F82C000719259 /* TransactTests.swift */; };
@@ -421,8 +421,8 @@
 		20D699B61A27678300DD1F75 /* ChainSRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainSRWebSocket.h; sourceTree = "<group>"; };
 		20D699B71A27678300DD1F75 /* ChainSRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainSRWebSocket.m; sourceTree = "<group>"; };
 		20D699BC1A276B8F00DD1F75 /* ChainWSSCertificate.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = ChainWSSCertificate.der; sourceTree = "<group>"; };
-		20D699BF1A277B1F00DD1F75 /* ChainAddressInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainAddressInfo.h; sourceTree = "<group>"; };
-		20D699C01A277B1F00DD1F75 /* ChainAddressInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainAddressInfo.m; sourceTree = "<group>"; };
+		20D699BF1A277B1F00DD1F75 /* ChainAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainAddress.h; sourceTree = "<group>"; };
+		20D699C01A277B1F00DD1F75 /* ChainAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChainAddress.m; sourceTree = "<group>"; };
 		20D699C51A2784B400DD1F75 /* AddressInfoTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressInfoTests.swift; sourceTree = "<group>"; };
 		20E9BD2E1A1F82C000719259 /* TransactTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactTests.swift; sourceTree = "<group>"; };
 		20E9BD311A1F831500719259 /* ChainSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainSigner.h; sourceTree = "<group>"; };
@@ -560,8 +560,8 @@
 			children = (
 				207516A41A1B57D000155228 /* Chain.h */,
 				207516A51A1B57D000155228 /* Chain.m */,
-				20D699BF1A277B1F00DD1F75 /* ChainAddressInfo.h */,
-				20D699C01A277B1F00DD1F75 /* ChainAddressInfo.m */,
+				20D699BF1A277B1F00DD1F75 /* ChainAddress.h */,
+				20D699C01A277B1F00DD1F75 /* ChainAddress.m */,
 				2061D1F01A2DC714004F1E40 /* ChainOpReturn.h */,
 				2061D1F11A2DC714004F1E40 /* ChainOpReturn.m */,
 				20E9BD411A1F85B300719259 /* ChainNotification.h */,
@@ -832,7 +832,7 @@
 				20C4ECF41A1CF5A1000E42C0 /* BTCBlindSignature.h in Headers */,
 				20C4ED121A1CF5A1000E42C0 /* BTCOpcode.h in Headers */,
 				2061D1E11A2CB49C004F1E40 /* ISO8601DateFormatter.h in Headers */,
-				20D699C11A277B1F00DD1F75 /* ChainAddressInfo.h in Headers */,
+				20D699C11A277B1F00DD1F75 /* ChainAddress.h in Headers */,
 				20C4ECFE1A1CF5A1000E42C0 /* BTCCurrencyConverter.h in Headers */,
 				20C4ECEC1A1CF5A1000E42C0 /* BTCAddress.h in Headers */,
 				20D699B81A27678300DD1F75 /* ChainSRWebSocket.h in Headers */,
@@ -886,7 +886,7 @@
 				20C4ED351A1CF5A2000E42C0 /* BTCBlindSignature.h in Headers */,
 				20C4ED531A1CF5A2000E42C0 /* BTCOpcode.h in Headers */,
 				2061D1E21A2CB49C004F1E40 /* ISO8601DateFormatter.h in Headers */,
-				20D699C21A277B1F00DD1F75 /* ChainAddressInfo.h in Headers */,
+				20D699C21A277B1F00DD1F75 /* ChainAddress.h in Headers */,
 				20C4ED3F1A1CF5A2000E42C0 /* BTCCurrencyConverter.h in Headers */,
 				20C4ED2D1A1CF5A2000E42C0 /* BTCAddress.h in Headers */,
 				20D699B91A27678300DD1F75 /* ChainSRWebSocket.h in Headers */,
@@ -1124,7 +1124,7 @@
 				20C4ED261A1CF5A1000E42C0 /* BTCTransactionInput.m in Sources */,
 				20E9BD4D1A1F85B300719259 /* ChainNotificationResult.m in Sources */,
 				20C4ECF91A1CF5A1000E42C0 /* BTCBlockchainInfo.m in Sources */,
-				20D699C31A277B1F00DD1F75 /* ChainAddressInfo.m in Sources */,
+				20D699C31A277B1F00DD1F75 /* ChainAddress.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1190,7 +1190,7 @@
 				20C4ED671A1CF5A2000E42C0 /* BTCTransactionInput.m in Sources */,
 				20E9BD4E1A1F85B300719259 /* ChainNotificationResult.m in Sources */,
 				20C4ED3A1A1CF5A2000E42C0 /* BTCBlockchainInfo.m in Sources */,
-				20D699C41A277B1F00DD1F75 /* ChainAddressInfo.m in Sources */,
+				20D699C41A277B1F00DD1F75 /* ChainAddress.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

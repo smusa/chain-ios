@@ -7,6 +7,8 @@
 #import "Chain.h"
 #import "ChainConnection.h"
 #import "ChainSigner.h"
+#import "ChainTransaction.h"
+#import "ChainBlock.h"
 #import "ChainHelpers.h"
 #import <CoreBitcoin/CoreBitcoin.h>
 #import <ISO8601DateFormatter.h>
@@ -369,7 +371,7 @@ static Chain *sharedInstance = nil;
 #pragma mark - Transaction
 
 
-- (void)getTransaction:(id)txhash completionHandler:(void (^)(BTCTransaction *transaction, NSError *error))completionHandler {
+- (void)getTransaction:(id)txhash completionHandler:(void (^)(ChainTransaction *transaction, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert(txhash != nil);
     NSParameterAssert([txhash isKindOfClass:[NSString class]] || [txhash isKindOfClass:[NSData class]]);
@@ -385,14 +387,14 @@ static Chain *sharedInstance = nil;
             completionHandler(nil, error);
             return;
         }
-        BTCTransaction* tx = [ChainHelpers transactionWithDictionary:dictionary];
+        ChainTransaction* tx = [ChainHelpers transactionWithDictionary:dictionary];
         NSAssert(tx, @"Should parse transaction correctly");
         completionHandler(tx, nil);
     }];
 }
 
 
-- (void)sendTransaction:(id)tx completionHandler:(void (^)(BTCTransaction* tx, NSError *error))completionHandler {
+- (void)sendTransaction:(id)tx completionHandler:(void (^)(ChainTransaction* tx, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
     NSString *pathString = [NSString stringWithFormat:@"transactions/send"];
@@ -428,7 +430,7 @@ static Chain *sharedInstance = nil;
         NSAssert(txhash, @"Tx hash must be returned");
         NSAssert(txdata, @"Raw tx data in hex must be returned");
 
-        BTCTransaction* tx = [[BTCTransaction alloc] initWithData:txdata];
+        ChainTransaction* tx = [[ChainTransaction alloc] initWithData:txdata];
 
         NSAssert([tx.transactionHash isEqual:txhash], @"Hashes must match.");
 
@@ -459,7 +461,7 @@ static Chain *sharedInstance = nil;
 //     }
 //   ]
 // }
-- (void) transact:(NSDictionary*)params completionHandler:(void (^)(BTCTransaction *tx, NSError *error))completionHandler
+- (void) transact:(NSDictionary*)params completionHandler:(void (^)(ChainTransaction *tx, NSError *error))completionHandler
 {
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert([params[@"inputs"] isKindOfClass:[NSArray class]]);
@@ -529,7 +531,7 @@ static Chain *sharedInstance = nil;
 #pragma mark - Blocks
 
 
-- (void) getBlockHeader:(id)block completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler {
+- (void) getBlock:(id)block completionHandler:(void (^)(ChainBlock *block, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
     NSParameterAssert(block != nil);
 
@@ -542,16 +544,16 @@ static Chain *sharedInstance = nil;
             completionHandler(nil, error);
             return;
         }
-        BTCBlockHeader* bh = [ChainHelpers blockHeaderWithDictionary:dictionary error:&error];
+        ChainBlock* bh = [ChainHelpers blockWithDictionary:dictionary error:&error];
         completionHandler(bh, bh ? nil : error);
     }];
 }
 
-- (void) getBlockHeaderByHeight:(NSInteger)height completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler {
-    [self getBlockHeader:@(height) completionHandler:completionHandler];
+- (void) getBlockByHeight:(NSInteger)height completionHandler:(void (^)(ChainBlock *block, NSError *error))completionHandler {
+    [self getBlock:@(height) completionHandler:completionHandler];
 }
 
-- (void) getLatestBlockHeader:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler {
+- (void) getLatestBlock:(void (^)(ChainBlock *blockHeader, NSError *error))completionHandler {
     NSParameterAssert(completionHandler != nil);
 
     NSString *pathString = [NSString stringWithFormat:@"blocks/latest"];
@@ -561,75 +563,75 @@ static Chain *sharedInstance = nil;
             completionHandler(nil, error);
             return;
         }
-        BTCBlockHeader* bh = [ChainHelpers blockHeaderWithDictionary:dictionary error:&error];
+        ChainBlock* bh = [ChainHelpers blockWithDictionary:dictionary error:&error];
         completionHandler(bh, bh ? nil : error);
     }];
 }
 
-- (void) getBlock:(id)block completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
-    NSParameterAssert(block != nil);
+//- (void) getBlock:(id)block completionHandler:(void (^)(ChainBlock *block, NSError *error))completionHandler {
+//    NSParameterAssert(completionHandler != nil);
+//    NSParameterAssert(block != nil);
+//
+//    [self getBlockHeader:block completionHandler:^(BTCBlockHeader *blockHeader, NSError *error) {
+//        if (!blockHeader) {
+//            completionHandler(nil, error);
+//            return;
+//        }
+//        [self getFullBlock:blockHeader completionHandler:completionHandler];
+//    }];
+//}
+//
+//- (void) getLatestBlock:(void (^)(ChainBlock *block, NSError *error))completionHandler {
+//    NSParameterAssert(completionHandler != nil);
+//
+//    [self getLatestBlockHeader:^(BTCBlockHeader *blockHeader, NSError *error) {
+//        if (!blockHeader) {
+//            completionHandler(nil, error);
+//            return;
+//        }
+//        [self getFullBlock:blockHeader completionHandler:completionHandler];
+//    }];
+//}
 
-    [self getBlockHeader:block completionHandler:^(BTCBlockHeader *blockHeader, NSError *error) {
-        if (!blockHeader) {
-            completionHandler(nil, error);
-            return;
-        }
-        [self getFullBlock:blockHeader completionHandler:completionHandler];
-    }];
-}
 
-- (void) getLatestBlock:(void (^)(BTCBlock *block, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
-
-    [self getLatestBlockHeader:^(BTCBlockHeader *blockHeader, NSError *error) {
-        if (!blockHeader) {
-            completionHandler(nil, error);
-            return;
-        }
-        [self getFullBlock:blockHeader completionHandler:completionHandler];
-    }];
-}
-
-
-// Helper to load all txs for a given block header.
-- (void) getFullBlock:(BTCBlockHeader*)bh completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler {
-    NSParameterAssert(completionHandler != nil);
-    NSParameterAssert(bh != nil);
-
-    __block int requestsCount = 0;
-
-    BTCBlock* block = [[BTCBlock alloc] initWithHeader:bh];
-    NSMutableArray* txs = [NSMutableArray array];
-
-    for (NSString* txid in bh.userInfo[@"transactionIDs"]) {
-
-        [txs addObject:[NSNull null]]; // placeholder
-        NSUInteger txindex = txs.count - 1;
-
-        requestsCount++;
-        [self getTransaction:txid completionHandler:^(BTCTransaction *transaction, NSError *error) {
-            if (requestsCount == 0) return; // all calls were cancelled.
-
-            if (!transaction) {
-                requestsCount = 0; // cancel and fail.
-                completionHandler(nil, error);
-                return;
-            }
-
-            requestsCount--;
-            txs[txindex] = transaction;
-            if (requestsCount == 0) {
-                block.transactions = txs;
-                completionHandler(block, nil);
-            }
-        }];
-    }
-
-    if (requestsCount == 0) {
-        completionHandler(block, nil);
-    }
-}
+//// Helper to load all txs for a given block header.
+//- (void) getFullBlock:(ChainBlock*)bh completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler {
+//    NSParameterAssert(completionHandler != nil);
+//    NSParameterAssert(bh != nil);
+//
+//    __block int requestsCount = 0;
+//
+//    BTCBlock* block = [[BTCBlock alloc] initWithHeader:bh];
+//    NSMutableArray* txs = [NSMutableArray array];
+//
+//    for (NSString* txid in bh.userInfo[@"transactionIDs"]) {
+//
+//        [txs addObject:[NSNull null]]; // placeholder
+//        NSUInteger txindex = txs.count - 1;
+//
+//        requestsCount++;
+//        [self getTransaction:txid completionHandler:^(ChainTransaction *transaction, NSError *error) {
+//            if (requestsCount == 0) return; // all calls were cancelled.
+//
+//            if (!transaction) {
+//                requestsCount = 0; // cancel and fail.
+//                completionHandler(nil, error);
+//                return;
+//            }
+//
+//            requestsCount--;
+//            txs[txindex] = transaction;
+//            if (requestsCount == 0) {
+//                block.transactions = txs;
+//                completionHandler(block, nil);
+//            }
+//        }];
+//    }
+//
+//    if (requestsCount == 0) {
+//        completionHandler(block, nil);
+//    }
+//}
 
 
 

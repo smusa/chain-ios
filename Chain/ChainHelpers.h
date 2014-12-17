@@ -7,11 +7,10 @@
 #import <Foundation/Foundation.h>
 
 @class BTCAddress;
-@class BTCTransaction;
-@class BTCTransactionOutput;
-@class BTCTransactionInput;
-@class BTCBlock;
-@class BTCBlockHeader;
+@class ChainTransaction;
+@class ChainTransactionOutput;
+@class ChainTransactionInput;
+@class ChainBlock;
 
 @interface ChainHelpers : NSObject
 
@@ -21,19 +20,19 @@
 
 + (NSArray*) addressesForAddressStrings:(NSArray*)addressStrings;
 
-+ (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict;
++ (ChainTransaction*) transactionWithDictionary:(NSDictionary*)dict;
 
-+ (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated;
++ (ChainTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated;
 
-+ (BTCTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict;
++ (ChainTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict;
 
-+ (BTCTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict;
++ (ChainTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict;
 
 + (NSArray*) opreturnsWithDictionaries:(NSArray*) dicts error:(NSError**)errorOut;
 
 + (NSString*) blockIDForBlockArgument:(id)block;
 
-+ (BTCBlockHeader*) blockHeaderWithDictionary:(NSDictionary*)dict error:(NSError**)errorOut;
++ (ChainBlock*) blockWithDictionary:(NSDictionary*)dict error:(NSError**)errorOut;
 
 // Returns nil if obj is NSNull.
 + (id) filterNSNull:(id)obj;

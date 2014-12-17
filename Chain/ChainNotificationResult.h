@@ -7,8 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreBitcoin/CoreBitcoin.h>
 
-@class BTCTransaction;
-@class BTCBlockHeader;
+@class ChainTransaction;
+@class ChainBlock;
 
 // Base class for each kind of notification result.
 // You will always receive a concrete subclass depending on type of notification.
@@ -77,19 +77,8 @@
 
 @interface ChainNotificationNewTransaction : ChainNotificationResult
 
-// BTCTransaction instance that has been detected on the network.
-// The transaction has the following informational properties set:
-// - blockID: String
-// - blockHash: NSData
-// - blockHeight: Int
-// - blockDate: NSDate
-// - confirmations: Int
-// - fee: BTCAmount
-// - inputs.userInfo["addresses"]: [BTCAddress] (addresses used in each input)
-// - inputs.value: BTCAmount (amount spent by the input)
-// - outputs.userInfo["addresses"]: [BTCAddress] (addresses used in each output)
-// - userInfo["chain_received_at"]: NSDate
-@property(nonatomic, readonly) BTCTransaction* transaction;
+// ChainTransaction instance that has been detected on the network.
+@property(nonatomic, readonly) ChainTransaction* transaction;
 
 // Transaction details as returned from the server.
 @property(nonatomic, readonly) NSDictionary* transactionDictionary;
@@ -99,8 +88,8 @@
 
 @interface ChainNotificationNewBlock : ChainNotificationResult
 
-// Returns BTCBlockHeader instance with a list of transaction IDs (userInfo["transactionIDs"])
-@property(nonatomic, readonly) BTCBlockHeader* blockHeader;
+// Returns ChainBlock instance with a list of transaction IDs.
+@property(nonatomic, readonly) ChainBlock* block;
 
 // Block details as returned from the server.
 @property(nonatomic, readonly) NSDictionary* blockDictionary;
@@ -110,19 +99,8 @@
 
 @interface ChainNotificationTransaction : ChainNotificationResult
 
-// BTCTransaction instance that has been detected on the network.
-// The transaction has the following informational properties set:
-// - blockID: String
-// - blockHash: NSData
-// - blockHeight: Int
-// - blockDate: NSDate
-// - confirmations: Int
-// - fee: BTCAmount
-// - inputs.userInfo["addresses"]: [BTCAddress] (addresses used in each input)
-// - inputs.value: BTCAmount (amount spent by the input)
-// - outputs.userInfo["addresses"]: [BTCAddress] (addresses used in each output)
-// - userInfo["chain_received_at"]: NSDate
-@property(nonatomic, readonly) BTCTransaction* transaction;
+// ChainTransaction instance that has been detected on the network.
+@property(nonatomic, readonly) ChainTransaction* transaction;
 
 // Transaction details
 @property(nonatomic, readonly) NSDictionary* transactionDictionary;

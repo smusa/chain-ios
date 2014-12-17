@@ -30,17 +30,17 @@
 @end
 
 @interface ChainNotificationNewTransaction ()
-@property(nonatomic, readwrite) BTCTransaction* transaction;
+@property(nonatomic, readwrite) ChainTransaction* transaction;
 @property(nonatomic, readwrite) NSDictionary* transactionDictionary;
 @end
 
 @interface ChainNotificationNewBlock ()
-@property(nonatomic, readwrite) BTCBlockHeader* blockHeader;
+@property(nonatomic, readwrite) ChainBlock* block;
 @property(nonatomic, readwrite) NSDictionary* blockDictionary;
 @end
 
 @interface ChainNotificationTransaction ()
-@property(nonatomic, readwrite) BTCTransaction* transaction;
+@property(nonatomic, readwrite) ChainTransaction* transaction;
 @property(nonatomic, readwrite) NSDictionary* transactionDictionary;
 @end
 
@@ -149,7 +149,7 @@
 - (id) initWithDictionary:(NSDictionary*)dict {
     if (self = [super initWithDictionary:dict]) {
         self.blockDictionary = dict[@"payload"][@"block"];
-        self.blockHeader = [ChainHelpers blockHeaderWithDictionary:self.blockDictionary error:NULL];
+        self.block = [ChainHelpers blockWithDictionary:self.blockDictionary error:NULL];
     }
     return self;
 }

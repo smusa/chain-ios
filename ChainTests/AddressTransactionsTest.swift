@@ -16,7 +16,7 @@ class AddressTransactionsTests : BaseTests {
 
             XCTAssert(transactions != nil, "Should receive some transaction for an address")
 
-            self.verifyTransactions(transactions as [BTCTransaction], addresses: ["1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"])
+            self.verifyTransactions(transactions as [ChainTransaction], addresses: ["1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"])
 
             self.completeAsyncTask()
         }
@@ -29,7 +29,7 @@ class AddressTransactionsTests : BaseTests {
 
             XCTAssert(transactions != nil, "Should receive some transaction for an address")
 
-            self.verifyTransactions(transactions as [BTCTransaction], addresses: ["17x23dNjXJLzGMev6R63uyRhMWP1VHawKc"])
+            self.verifyTransactions(transactions as [ChainTransaction], addresses: ["17x23dNjXJLzGMev6R63uyRhMWP1VHawKc"])
 
             self.completeAsyncTask()
         }
@@ -44,7 +44,7 @@ class AddressTransactionsTests : BaseTests {
 
             XCTAssert(transactions != nil, "Should receive some transaction for an address")
 
-            self.verifyTransactions(transactions as [BTCTransaction],
+            self.verifyTransactions(transactions as [ChainTransaction],
                                 addresses: ["17x23dNjXJLzGMev6R63uyRhMWP1VHawKc",
                                             "1CBtcGivXmHQ8ZqdPgeMfcpQNJrqTrSAcG"])
 
@@ -60,13 +60,17 @@ class AddressTransactionsTests : BaseTests {
 
     // Helpers
 
-    func verifyTransactions(txs: [BTCTransaction], addresses: [String]) {
+    func verifyTransactions(txs: [ChainTransaction], addresses: [String]) {
 
         XCTAssert(txs.count > 0)
 
         for tx in txs {
             let addresses = tx.inputs.reduce([] as [BTCAddress]) { acc, txin in
-                return acc + ((txin as BTCTransactionInput).userInfo["addresses"] as [BTCAddress])
+                let txin2 = txin as? ChainTransactionInput
+                XCTAssert(txin2 != nil)
+                let addrs = txin2!.addresses as? [BTCAddress]
+                XCTAssert(addrs != nil)
+                return acc + addrs!
             }
 
             XCTAssert(tx.blockHeight > 0)

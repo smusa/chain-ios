@@ -48,25 +48,26 @@
     return addresses;
 }
 
-+ (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict {
++ (ChainTransaction*) transactionWithDictionary:(NSDictionary*)dict {
     return [self transactionWithDictionary:dict allowTruncated:NO];
 }
 
-+ (BTCTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated {
++ (ChainTransaction*) transactionWithDictionary:(NSDictionary*)dict allowTruncated:(BOOL)allowTruncated {
     // Will be used below to check that we constructed transaction correctly.
     NSData* receivedHash = BTCHashFromID(dict[@"hash"]);
 
-    BTCTransaction* tx = [[BTCTransaction alloc] init];
+    ChainTransaction* tx = [[ChainTransaction alloc] init];
 
     tx.lockTime = [dict[@"lock_time"] unsignedIntValue];
 
     for (NSDictionary* inputDict in dict[@"inputs"]) {
-        BTCTransactionInput* txin = [self transactionInputWithDictionary:inputDict];
+        ChainTransactionInput* txin = [self transactionInputWithDictionary:inputDict];
         [tx addInput:txin];
     }
 
     for (NSDictionary* outputDict in dict[@"outputs"]) {
-        BTCTransactionOutput* txout = [self transactionOutputWithDictionary:outputDict];
+        ChainTransactionOutput* txout = [self transactionOutputWithDictionary:outputDict];
+        txout.confirmations = [[ChainHelpers filterNSNull:dict[@"confirmations"]] integerValue];
         [tx addOutput:txout];
     }
 
@@ -94,18 +95,12 @@
         tx.fee = [feeNumber longLongValue];
     }
     NSString* chainReceivedDateString = [ChainHelpers filterNSNull:dict[@"chain_received_at"]];
-    NSDate* chainReceivedDate = chainReceivedDateString ? [dateFormatter dateFromString:chainReceivedDateString] : nil;
-
-    if (chainReceivedDate) {
-        tx.userInfo = @{
-            @"chain_received_at": chainReceivedDate
-        };
-    }
+    tx.receivedDate = chainReceivedDateString ? [dateFormatter dateFromString:chainReceivedDateString] : nil;
     return tx;
 }
 
-+ (BTCTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict {
-    BTCTransactionInput* txin = [[BTCTransactionInput alloc] init];
++ (ChainTransactionInput*) transactionInputWithDictionary:(NSDictionary*)inputDict {
+    ChainTransactionInput* txin = [[ChainTransactionInput alloc] init];
 
     NSString* scriptSig = [self filterNSNull:inputDict[@"script_signature"]];
     NSString* coinbaseHex = [self filterNSNull:inputDict[@"coinbase"]];
@@ -123,21 +118,16 @@
     }
 
     txin.sequence = [inputDict[@"sequence"] unsignedIntValue];
-
-    txin.userInfo = @{
-                      @"addresses": [self addressesForAddressStrings:inputDict[@"addresses"]],
-                      };
+    txin.addresses = [self addressesForAddressStrings:inputDict[@"addresses"]],
     txin.value = [inputDict[@"value"] longLongValue];
     return txin;
 }
 
-+ (BTCTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict {
-    BTCTransactionOutput* txout = [[BTCTransactionOutput alloc] init];
++ (ChainTransactionOutput*) transactionOutputWithDictionary:(NSDictionary*)outputDict {
+    ChainTransactionOutput* txout = [[ChainTransactionOutput alloc] init];
     txout.value = [outputDict[@"value"] longLongValue];
     txout.script = [[BTCScript alloc] initWithData:BTCDataFromHex(outputDict[@"script_hex"])];
-    txout.userInfo = @{
-                       @"addresses": [self addressesForAddressStrings:outputDict[@"addresses"]],
-                       };
+    txout.addresses = [self addressesForAddressStrings:outputDict[@"addresses"]];
     txout.spent = [outputDict[@"spent"] boolValue];
 
     // Available in unspents API
@@ -192,7 +182,7 @@
     return nil;
 }
 
-+ (BTCBlockHeader*) blockHeaderWithDictionary:(NSDictionary*)dict error:(NSError**)errorOut {
++ (ChainBlock*) blockWithDictionary:(NSDictionary*)dict error:(NSError**)errorOut {
 
     /*
      {
@@ -215,7 +205,7 @@
     // Will be used below to check that we reconstructed block header correctly.
     NSData* receivedHash = BTCHashFromID(dict[@"hash"]);
 
-    BTCBlockHeader* bh = [[BTCBlockHeader alloc] init];
+    ChainBlock* bh = [[ChainBlock alloc] init];
     bh.version = [dict[@"version"] intValue];
     bh.previousBlockID = [self filterNSNull:dict[@"previous_block_hash"]];
     bh.merkleRootHash = BTCHashFromID(dict[@"merkle_root"]);
@@ -243,7 +233,7 @@
 
     bh.height = [dict[@"height"] integerValue];
     bh.confirmations = [dict[@"confirmations"] unsignedIntegerValue];
-    bh.userInfo = @{@"transactionIDs": dict[@"transaction_hashes"] ?: @[]};
+    bh.transactionIDs = dict[@"transaction_hashes"] ?: @[];
     return bh;
 }
 

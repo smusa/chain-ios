@@ -9,6 +9,8 @@
 
 #import "ChainAddress.h"
 #import "ChainOpReturn.h"
+#import "ChainTransaction.h"
+#import "ChainBlock.h"
 #import "ChainNotification.h"
 #import "ChainNotificationResult.h"
 #import "ChainNotificationObserver.h"
@@ -22,8 +24,6 @@ extern NSString* const ChainAPIVersion2;
 extern NSString* const ChainAPIVersion1;
 
 @class BTCAddress;
-@class BTCTransaction;
-
 @interface Chain : NSObject
 
 // Bitcoin blockchain being used.
@@ -57,20 +57,9 @@ extern NSString* const ChainAPIVersion1;
 
 #pragma mark - Transactions By Address
 
-// Returns an array of transactions (BTCTransaction objects) for a given address or an array of addresses.
+// Returns an array of transactions (ChainTransaction objects) for a given address or an array of addresses.
 // Each address instance could be an NSString or BTCAddress.
 // Optional `limit` parameter specifies the maximum amount of transactions to be returned (0 meaning not limit).
-// Each transaction has the following informational properties set:
-// - blockID: String
-// - blockHash: NSData
-// - blockHeight: Int
-// - blockDate: NSDate
-// - confirmations: Int
-// - fee: BTCAmount
-// - inputs.userInfo["addresses"]: [BTCAddress] (addresses used in each input)
-// - inputs.value: BTCAmount (amount spent by the input)
-// - outputs.userInfo["addresses"]: [BTCAddress] (addresses used in each output)
-// - userInfo["chain_received_at"]: NSDate
 - (void) getAddressTransactions:(id)address completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
 - (void) getAddressesTransactions:(NSArray *)addresses completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
 - (void) getAddressTransactions:(id)address limit:(NSInteger)limit completionHandler:(void (^)(NSArray *transactions, NSError *error))completionHandler;
@@ -80,13 +69,8 @@ extern NSString* const ChainAPIVersion1;
 #pragma mark - Unspent Outputs By Address
 
 
-// Returns an array of unspent outputs (BTCTransactionOutput instances) for a given address or an array of addresses.
+// Returns an array of unspent outputs (ChainTransactionOutput instances) for a given address or an array of addresses.
 // Each address instance could be an NSString or BTCAddress.
-// Each output instance has the following informational properties set:
-// - index: Int (index in its transaction)
-// - confirmations: Int
-// - spent: Bool
-// - userInfo["addresses"]: [BTCAddress] (addresses used in each input)
 - (void)getAddressUnspents:(id)address completionHandler:(void (^)(NSArray *unspentOutputs, NSError *error))completionHandler;
 - (void)getAddressesUnspents:(NSArray *)addresses completionHandler:(void (^)(NSArray *unspentOutputs, NSError *error))completionHandler;
 
@@ -132,15 +116,15 @@ extern NSString* const ChainAPIVersion1;
 
 
 // Loads complete transaction using transaction hash (NSData) or transaction ID (NSString):
-- (void)getTransaction:(id)txhash completionHandler:(void (^)(BTCTransaction *transaction, NSError *error))completionHandler;
+- (void)getTransaction:(id)txhash completionHandler:(void (^)(ChainTransaction *transaction, NSError *error))completionHandler;
 
 // Sends transaction represented as one of the following:
-// - BTCTransaction
+// - BTCTransaction or ChainTransaction
 // - NSData (raw binary)
 // - NSString (raw binary in hex)
 // - NSDictionary (signed tx template)
-// Returns a fully signed transaction that was broadcasted.
-- (void)sendTransaction:(id)tx completionHandler:(void (^)(BTCTransaction* tx, NSError *error))completionHandler;
+// Returns a fully signed transaction that was broadcasted (without informational properties).
+- (void)sendTransaction:(id)tx completionHandler:(void (^)(ChainTransaction* tx, NSError *error))completionHandler;
 
 
 #pragma mark - Transaction Builder
@@ -152,7 +136,7 @@ extern NSString* const ChainAPIVersion1;
 //                                    @"private_key": <hex|WIF|BTCKey>}
 // params[@"outputs"] should contain @{@"address": <base58-encoded address>,
 //                                     @"amount": @(satoshis)}
-- (void) transact:(NSDictionary*)params completionHandler:(void (^)(BTCTransaction *tx, NSError *error))completionHandler;
+- (void) transact:(NSDictionary*)params completionHandler:(void (^)(ChainTransaction *tx, NSError *error))completionHandler;
 
 // Makes a request to build a transaction with given parameters.
 - (void) buildTransaction:(NSDictionary*)params completionHandler:(void (^)(NSDictionary *dictionary, NSError *error))completionHandler;
@@ -166,26 +150,17 @@ extern NSString* const ChainAPIVersion1;
 #pragma mark - Blocks
 
 
-// Returns BTCBlockHeader instance with a list of transaction IDs (userInfo["transactionIDs"])
+// Returns a ChainBlock instance.
 // Block can be identified by either:
 // - NSNumber (height)
 // - NSString (block ID, reversed block hash in hex)
 // - NSData (block hash)
 // - BTCBlockHeader
 // - BTCBlock
-- (void) getBlockHeader:(id)block completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler;
-- (void) getBlockHeaderByHeight:(NSInteger)height completionHandler:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler;
-- (void) getLatestBlockHeader:(void (^)(BTCBlockHeader *blockHeader, NSError *error))completionHandler;
+- (void) getBlock:(id)block completionHandler:(void (^)(ChainBlock *block, NSError *error))completionHandler;
+- (void) getBlockByHeight:(NSInteger)height completionHandler:(void (^)(ChainBlock *block, NSError *error))completionHandler;
+- (void) getLatestBlock:(void (^)(ChainBlock *block, NSError *error))completionHandler;
 
-// Returns a complete block with all transactions.
-// Block can be identified by either:
-// - NSNumber (height)
-// - NSString (block ID, reversed block hash in hex)
-// - NSData (block hash)
-// - BTCBlockHeader
-// - BTCBlock
-- (void) getBlock:(id)block completionHandler:(void (^)(BTCBlock *block, NSError *error))completionHandler;
-- (void) getLatestBlock:(void (^)(BTCBlock *block, NSError *error))completionHandler;
 
 
 

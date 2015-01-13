@@ -30,6 +30,39 @@ class TransactTests : BaseTests {
         return nil
     }
 
+    // Get transaction that does not exist.
+    func testGetMissingTransaction() {
+
+        shouldCompleteIn(10.0)
+
+        self.client.getTransaction("deadbeef7d05478c86a8989168300541be4bfa4750ec2cca40e8b36101a3b419") { (tx, error) in
+
+            XCTAssert(tx == nil, "Transaction should not exist")
+            XCTAssert(error.code == 201, "Code should be 201. Unable to find transaction.")
+
+            self.completeAsyncTask()
+        }
+
+        waitForCompletion()
+    }
+
+    // Send invalid transaction
+    func testSendEnvalidTransaction() {
+
+        shouldCompleteIn(10.0)
+
+        self.client.sendTransaction(BTCTransaction()) { (tx, error) in
+
+            XCTAssert(tx == nil, "Transaction should not be sent")
+            XCTAssert(error.code == 202, "Code should be 202. Transaction rejected.")
+
+            self.completeAsyncTask()
+        }
+
+        waitForCompletion()
+    }
+
+
     func testBuildingTransaction() {
 
         shouldCompleteIn(2.0)

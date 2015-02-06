@@ -120,7 +120,7 @@
     if (result) {
         if (self.resultHandler) self.resultHandler(result);
     } else {
-        NSLog(@"ChainNotificationObserver: Skipping result: %@", dict);
+        //NSLog(@"ChainNotificationObserver: Skipping result: %@", dict);
     }
 }
 
